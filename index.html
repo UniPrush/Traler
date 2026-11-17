@@ -843,7 +843,20 @@ function startTimer(){
       training.doneSet[training.activeIndex] = true;
       updateTimerUI();
       renderTraining();
-      showToast('ВЫПОЛНЕНО');
+      
+      // АВТО-ПЕРЕХОД НА ОТДЫХ
+      var list = exercisesData[currentDayIndex] || [];
+      var nextEx = list[training.activeIndex + 1];
+      var isCurrentRest = list[training.activeIndex].name.toLowerCase() === 'отдых';
+      
+      if(nextEx && nextEx.name.toLowerCase() === 'отдых' && !isCurrentRest) {
+         // Автоматически запускаем отдых
+         startExercise(training.activeIndex + 1);
+         showToast('УПРАЖНЕНИЕ ВЫПОЛНЕНО! ПЕРЕХОД НА ОТДЫХ...');
+      } else {
+         if(isCurrentRest) showToast('ОТДЫХ ОКОНЧЕН!');
+         else showToast('УПРАЖНЕНИЕ ВЫПОЛНЕНО!');
+      }
       return;
     }
     updateTimerUI();
@@ -872,7 +885,14 @@ function updateTimerUI(){
   if(btn) btn.disabled = !isDone;
   
   if(hint){
-    hint.textContent = isDone ? 'Время вышло — можно перейти к следующему' : 'Дождитесь окончания таймера';
+    var list = exercisesData[currentDayIndex] || [];
+    var isRest = list[training.activeIndex] && list[training.activeIndex].name.toLowerCase() === 'отдых';
+    
+    if (isDone) {
+      hint.textContent = isRest ? 'Отдых окончен — нажмите «Следующее» для старта упражнения' : 'Упражнение выполнено — нажмите «Следующее»';
+    } else {
+      hint.textContent = isRest ? 'Восстановление сил...' : 'Дождитесь окончания таймера';
+    }
   }
 }
 
