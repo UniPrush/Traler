@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>✅</text></svg>">
+<title>Habit Tracker | Трекер привычек</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-primary:#1e2538; --bg-secondary:#151c2c; --bg-card:#2c334a; --bg-input:#2a2f40;
+  --border-color:#ffaa66; --text-color:#FFFFFF; --text-secondary:#aaa;
+  --btn-bg:#5e4a3a; --btn-shadow:#2a1e14; --card-shadow:#121624;
+  --font-size-multiplier:1; --scale-factor:1;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Press Start 2P','Courier New',monospace;
+  background:#2a1a3a; min-height:100vh; overflow-x:hidden;
+  font-size:calc(0.5rem * var(--font-size-multiplier) * var(--scale-factor));
+  line-height:2; color:var(--text-color); padding:calc(8px * var(--scale-factor));
+  display:flex; flex-direction:column;
+}
+h1,h2,h3,p,span,div,button,a,label,strong,b,input,textarea{
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+h1{font-size:calc(0.9rem * var(--font-size-multiplier) * var(--scale-factor));letter-spacing:calc(2px * var(--scale-factor));line-height:2;}
+.sky{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;background:linear-gradient(180deg,#1a1030 0%,#2a1a3a 50%,#1a1030 100%);}
+.container{
+  width:100%;max-width:1000px;margin:0 auto;position:relative;z-index:20;
+  background:var(--bg-primary);border-radius:calc(20px * var(--scale-factor));
+  border:calc(3px * var(--scale-factor)) solid var(--border-color);
+  box-shadow:0 calc(15px * var(--scale-factor)) calc(30px * var(--scale-factor)) rgba(0,0,0,0.5);
+  padding:calc(20px * var(--scale-factor)) calc(25px * var(--scale-factor));
+  flex:1;display:flex;flex-direction:column;
+}
+.top-bar{
+  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;
+  gap:calc(10px * var(--scale-factor));padding:calc(10px * var(--scale-factor));
+  background:var(--bg-secondary);border-radius:calc(12px * var(--scale-factor));
+  border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  margin-bottom:calc(15px * var(--scale-factor));
+}
+.tabs{
+  display:flex;gap:calc(6px * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor));flex-wrap:wrap;
+}
+.tab-btn{
+  flex:1;background:var(--btn-bg);border:none;font-family:inherit;
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  padding:calc(10px * var(--scale-factor)) calc(8px * var(--scale-factor));
+  color:#fff;cursor:pointer;border-radius:calc(10px * var(--scale-factor));
+  box-shadow:calc(3px * var(--scale-factor)) calc(3px * var(--scale-factor)) 0 var(--btn-shadow);
+  transition:all 0.15s ease;text-transform:uppercase;min-width:calc(100px * var(--scale-factor));
+}
+.tab-btn.active{background:var(--border-color);color:#121624;}
+.tab-btn:hover{transform:scale(1.02);}
+.date-nav{
+  display:flex;justify-content:center;align-items:center;
+  gap:calc(10px * var(--scale-factor));margin-bottom:calc(15px * var(--scale-factor));
+  flex-wrap:wrap;
+}
+.date-btn{
+  background:var(--btn-bg);border:none;font-family:inherit;
+  font-size:calc(0.45rem * var(--font-size-multiplier) * var(--scale-factor));
+  padding:calc(8px * var(--scale-factor)) calc(12px * var(--scale-factor));
+  color:#fff;cursor:pointer;border-radius:calc(8px * var(--scale-factor));
+  box-shadow:calc(2px * var(--scale-factor)) calc(2px * var(--scale-factor)) 0 var(--btn-shadow);
+  transition:all 0.15s ease;
+}
+.date-btn:hover{transform:scale(1.05);}
+.date-display{
+  font-size:calc(0.5rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--border-color);font-weight:bold;min-width:calc(180px * var(--scale-factor));
+  text-align:center;
+}
+.progress-section{
+  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(14px * var(--scale-factor));padding:calc(15px * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor));
+}
+.progress-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  margin-bottom:calc(8px * var(--scale-factor));gap:calc(8px * var(--scale-factor));
+}
+.progress-bar-container{
+  background:#2a2f40;border-radius:calc(15px * var(--scale-factor));
+  height:calc(14px * var(--scale-factor));overflow:hidden;
+}
+.progress-bar{
+  height:100%;background:linear-gradient(90deg,#2a7a3a,#4aff6a);
+  width:0%;border-radius:calc(15px * var(--scale-factor));
+  transition:width 0.4s ease;
+}
+.add-form{
+  display:flex;gap:calc(8px * var(--scale-factor));flex-wrap:wrap;
+  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(14px * var(--scale-factor));padding:calc(12px * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor));
+}
+.add-form.hidden{display:none;}
+.add-input{
+  flex:1;min-width:calc(200px * var(--scale-factor));
+  background:var(--bg-input);border:calc(2px * var(--scale-factor)) solid #e08a4a;
+  border-radius:calc(10px * var(--scale-factor));color:var(--text-color);
+  font-family:'Press Start 2P',monospace;
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  padding:calc(10px * var(--scale-factor));font-weight:bold;
+}
+.add-input:focus{outline:none;border-color:var(--border-color);box-shadow:0 0 calc(15px * var(--scale-factor)) rgba(255,170,102,0.2);}
+.add-input:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* Убираем стрелочки у input type="number" */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.btn{
+  background:var(--btn-bg);border:none;font-family:inherit;
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  padding:calc(10px * var(--scale-factor)) calc(14px * var(--scale-factor));
+  color:#fff;cursor:pointer;border-radius:calc(8px * var(--scale-factor));
+  box-shadow:calc(2px * var(--scale-factor)) calc(2px * var(--scale-factor)) 0 var(--btn-shadow);
+  transition:all 0.15s ease;text-transform:uppercase;white-space:nowrap;
+}
+.btn:hover:not(:disabled){transform:scale(1.03);}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-green{background:#2a7a3a;}
+.btn-red{background:#8a2a2a;}
+.btn-big{
+  width:100%;padding:calc(16px * var(--scale-factor));
+  font-size:calc(0.6rem * var(--font-size-multiplier) * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor));
+}
+.items-list{display:flex;flex-direction:column;gap:calc(8px * var(--scale-factor));}
+.item{
+  display:flex;align-items:center;gap:calc(10px * var(--scale-factor));
+  background:var(--bg-card);border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(12px * var(--scale-factor));padding:calc(12px * var(--scale-factor));
+  transition:all 0.2s ease;
+}
+.item.done{opacity:0.6;border-color:#4a8a4a;}
+.item.done .item-text{text-decoration:line-through;color:var(--text-secondary);}
+.item-checkbox{
+  width:calc(24px * var(--scale-factor));height:calc(24px * var(--scale-factor));
+  min-width:calc(24px * var(--scale-factor));
+  border:calc(3px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(6px * var(--scale-factor));cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:calc(0.7rem * var(--scale-factor));background:var(--bg-input);
+  transition:all 0.15s ease;
+}
+.item-checkbox:hover{transform:scale(1.1);}
+.item-checkbox.checked{background:#2a7a3a;border-color:#4aff6a;}
+.item-checkbox.checked::after{content:'✓';color:#fff;font-size:calc(0.5rem * var(--scale-factor));}
+.item-text{
+  flex:1;font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  word-break:break-word;line-height:1.6;
+}
+.item-delete{
+  background:transparent;border:none;color:#ff6666;
+  font-size:calc(0.6rem * var(--scale-factor));cursor:pointer;
+  padding:calc(4px * var(--scale-factor));transition:all 0.15s ease;
+  font-family:inherit;
+}
+.item-delete:hover{transform:scale(1.2);color:#ff4444;}
+.empty-state{
+  text-align:center;padding:calc(40px * var(--scale-factor));
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--text-secondary);line-height:2;
+}
+.habits-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:calc(4px * var(--scale-factor));
+  margin-top:calc(10px * var(--scale-factor));
+}
+.habit-day-header{
+  text-align:center;font-size:calc(0.3rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--border-color);font-weight:bold;padding:calc(4px * var(--scale-factor));
+}
+.habit-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  background:var(--bg-input);border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(8px * var(--scale-factor));cursor:pointer;
+  font-size:calc(0.6rem * var(--scale-factor));
+  transition:all 0.15s ease;
+}
+.habit-day:hover{transform:scale(1.08);}
+.habit-day.done{background:#2a7a3a;border-color:#4aff6a;}
+.habit-day.today{border-color:#fff;box-shadow:0 0 calc(10px * var(--scale-factor)) rgba(255,255,255,0.4);}
+.habit-day.future{opacity:0.3;cursor:not-allowed;}
+.habit-card{
+  background:var(--bg-card);border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(14px * var(--scale-factor));padding:calc(15px * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor));
+}
+.habit-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:calc(10px * var(--scale-factor));flex-wrap:wrap;gap:calc(8px * var(--scale-factor));
+}
+.habit-name{
+  font-size:calc(0.45rem * var(--font-size-multiplier) * var(--scale-factor));
+  font-weight:bold;flex:1;min-width:calc(150px * var(--scale-factor));
+  word-break:break-word;
+}
+.habit-streak{
+  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid #ffaa66;
+  border-radius:calc(20px * var(--scale-factor));
+  padding:calc(4px * var(--scale-factor)) calc(10px * var(--scale-factor));
+  font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:#ffaa66;font-weight:bold;white-space:nowrap;
+}
+.habit-stats{
+  display:flex;gap:calc(10px * var(--scale-factor));flex-wrap:wrap;
+  font-size:calc(0.3rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--text-secondary);margin-top:calc(8px * var(--scale-factor));
+}
+.toast{
+  position:fixed;top:calc(20px * var(--scale-factor));left:50%;transform:translateX(-50%);
+  background:#2a7a3a;color:#fff;
+  padding:calc(10px * var(--scale-factor)) calc(20px * var(--scale-factor));
+  border-radius:calc(10px * var(--scale-factor));
+  border:calc(2px * var(--scale-factor)) solid #4aff6a;z-index:9999;
+  font-family:'Press Start 2P',monospace;
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  animation:toastIn 0.3s ease;max-width:90%;text-align:center;
+}
+.toast.warning{background:#8a3a2a;border-color:#ff6644;}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(calc(-20px * var(--scale-factor)));}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+/* ======================= МОДАЛЬНОЕ ПОДТВЕРЖДЕНИЕ ======================= */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn 0.2s ease;
+}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal-box{
+  background:var(--bg-primary);border:calc(3px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(16px * var(--scale-factor));
+  padding:calc(20px * var(--scale-factor));
+  max-width:calc(400px * var(--scale-factor));width:90%;
+  box-shadow:0 calc(10px * var(--scale-factor)) calc(30px * var(--scale-factor)) rgba(0,0,0,0.6);
+  text-align:center;
+}
+.modal-text{
+  font-size:calc(0.45rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--text-color);line-height:2;margin-bottom:calc(20px * var(--scale-factor));
+}
+.modal-actions{
+  display:flex;gap:calc(10px * var(--scale-factor));justify-content:center;flex-wrap:wrap;
+}
+.modal-actions .btn{flex:1;min-width:calc(100px * var(--scale-factor));}
+
+/* ======================= ТРЕНИРОВКА ======================= */
+.exercise-item{
+  display:flex;align-items:center;gap:calc(10px * var(--scale-factor));
+  background:var(--bg-card);border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(12px * var(--scale-factor));padding:calc(12px * var(--scale-factor));
+  transition:all 0.2s ease;
+}
+.exercise-item.active{
+  border-color:#4aff6a;
+  box-shadow:0 0 calc(15px * var(--scale-factor)) rgba(74,255,106,0.4);
+}
+.exercise-item.done{opacity:0.5;border-color:#4a8a4a;}
+.exercise-item.done .exercise-name{text-decoration:line-through;color:var(--text-secondary);}
+.exercise-item.locked{opacity:0.6;}
+.exercise-item.dragging{opacity:0.4; border-style:dashed;}
+.exercise-num{
+  min-width:calc(28px * var(--scale-factor));
+  height:calc(28px * var(--scale-factor));
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-secondary);
+  border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(8px * var(--scale-factor));
+  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--border-color);font-weight:bold;
+}
+.exercise-item.done .exercise-num{background:#2a7a3a;border-color:#4aff6a;color:#fff;}
+.exercise-item.active .exercise-num{background:#4aff6a;border-color:#fff;color:#121624;}
+
+.drag-handle{
+  cursor:grab;color:var(--text-secondary);font-size:calc(0.7rem * var(--scale-factor));
+  padding:0 calc(4px * var(--scale-factor));user-select:none;letter-spacing:-2px;
+}
+.drag-handle:active{cursor:grabbing;}
+
+.exercise-name{
+  flex:1;font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
+  word-break:break-word;line-height:1.6;
+}
+.exercise-time{
+  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid #ffaa66;
+  border-radius:calc(20px * var(--scale-factor));
+  padding:calc(4px * var(--scale-factor)) calc(10px * var(--scale-factor));
+  font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:#ffaa66;font-weight:bold;white-space:nowrap;
+}
+.active-timer{
+  text-align:center;
+  font-size:calc(1.2rem * var(--scale-factor));
+  color:var(--border-color);
+  margin:calc(10px * var(--scale-factor)) 0;
+  letter-spacing:calc(3px * var(--scale-factor));
+  font-weight:bold;
+}
+.active-timer.finished{color:#4aff6a;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.training-actions{
+  display:flex;gap:calc(8px * var(--scale-factor));
+  margin-top:calc(12px * var(--scale-factor));flex-wrap:wrap;justify-content:center;
+}
+.start-training-box{
+  background:var(--bg-secondary);
+  border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  border-radius:calc(14px * var(--scale-factor));
+  padding:calc(15px * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor));
+  text-align:center;
+}
+.start-training-hint{
+  font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
+  color:var(--text-secondary);margin-top:calc(10px * var(--scale-factor));line-height:2;
+}
+@media(max-width:480px){body{--scale-factor:0.8;}.date-display{min-width:calc(140px * var(--scale-factor));}.tab-btn{min-width:calc(80px * var(--scale-factor));font-size:calc(0.33rem * var(--font-size-multiplier) * var(--scale-factor));}}
+</style>
+</head>
+<body>
+<div class="sky"></div>
+<div class="container">
+  <div class="top-bar"><h1>HABIT TRACKER</h1></div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabTasks" onclick="switchTab('tasks')">ЗАДАЧИ</button>
+    <button class="tab-btn" id="tabHabits" onclick="switchTab('habits')">ПРИВЫЧКИ</button>
+    <button class="tab-btn" id="tabTraining" onclick="switchTab('training')">ТРЕНИРОВКА</button>
+  </div>
+
+  <!-- ===================== ЗАДАЧИ ===================== -->
+  <div id="tasksTab">
+    <div class="date-nav">
+      <button class="date-btn" onclick="changeDate(-1)">◀</button>
+      <div class="date-display" id="dateDisplay"></div>
+      <button class="date-btn" onclick="changeDate(1)">▶</button>
+      <button class="date-btn" onclick="goToday()" style="background:#2a7a3a;">СЕГОДНЯ</button>
+    </div>
+    <div class="progress-section">
+      <div class="progress-label">
+        <span>ПРОГРЕСС</span>
+        <span id="progressText">0 / 0</span>
+      </div>
+      <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
+    </div>
+    <div class="add-form">
+      <input type="text" class="add-input" id="taskInput" placeholder="НОВАЯ ЗАДАЧА..." maxlength="100">
+      <button class="btn btn-green" onclick="addTask()">+ ДОБАВИТЬ</button>
+    </div>
+    <div class="items-list" id="tasksList"></div>
+  </div>
+
+  <!-- ===================== ПРИВЫЧКИ ===================== -->
+  <div id="habitsTab" style="display:none;">
+    <div class="add-form">
+      <input type="text" class="add-input" id="habitInput" placeholder="НОВАЯ ПРИВЫЧКА..." maxlength="100">
+      <button class="btn btn-green" onclick="addHabit()">+ ДОБАВИТЬ</button>
+    </div>
+    <div id="habitsList"></div>
+  </div>
+
+  <!-- ===================== ТРЕНИРОВКА ===================== -->
+  <div id="trainingTab" style="display:none;">
+    <div class="add-form" id="exerciseForm">
+      <input type="text" class="add-input" id="exerciseInput" placeholder="УПРАЖНЕНИЕ..." maxlength="60">
+      <input type="number" class="add-input" id="exerciseTime" placeholder="СЕК" min="5" max="600" value="30" style="max-width:calc(110px * var(--scale-factor));">
+      <button class="btn btn-green" onclick="addExercise()">+ ДОБАВИТЬ</button>
+    </div>
+
+    <div class="start-training-box" id="startTrainingBox" style="display:none;">
+      <button class="btn btn-green btn-big" onclick="startTraining()">▶ НАЧАТЬ ТРЕНИРОВКУ</button>
+      <div class="start-training-hint" id="startTrainingHint"></div>
+    </div>
+
+    <div class="progress-section" id="trainingActive" style="display:none;">
+      <div class="progress-label">
+        <span>СЕЙЧАС: <strong id="activeExerciseName">—</strong></span>
+        <span id="activeExerciseStep">1 / 1</span>
+      </div>
+      <div class="active-timer" id="activeExerciseTimer" aria-live="polite" role="timer">00:00</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="activeExerciseProgress" style="width:0%;"></div>
+      </div>
+      <div class="training-actions">
+        <button class="btn btn-green" id="btnNextExercise" disabled onclick="nextExercise()">СЛЕДУЮЩЕЕ</button>
+        <button class="btn btn-red" onclick="resetTraining()">СБРОС</button>
+      </div>
+      <div class="habit-stats" style="margin-top:calc(8px * var(--scale-factor));justify-content:center;">
+        <span id="trainingHint">Дождитесь окончания таймера</span>
+      </div>
+    </div>
+
+    <div class="items-list" id="exercisesList"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   СОСТОЯНИЕ
+   ============================================================ */
+var currentTab = 'tasks';
+var currentDate = new Date();
+currentDate.setHours(0,0,0,0);
+var tasks = loadTasks();
+var habits = loadHabits();
+var exercises = loadExercises(); 
+var training = {
+  activeIndex: -1,   
+  endTime: 0,        
+  total: 0,          
+  timerId: null,     
+  doneSet: {},       
+  started: false     
+};
+
+var MONTHS = ['ЯНВАРЯ','ФЕВРАЛЯ','МАРТА','АПРЕЛЯ','МАЯ','ИЮНЯ','ИЮЛЯ','АВГУСТА','СЕНТЯБРЯ','ОКТЯБРЯ','НОЯБРЯ','ДЕКАБРЯ'];
+var DAYS_SHORT = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
+
+/* ============================================================
+   ХРАНИЛИЩЕ И УТИЛИТЫ
+   ============================================================ */
+function loadTasks(){ try{ var s = localStorage.getItem('ht_tasks'); if(s) return JSON.parse(s); }catch(e){} return {}; }
+function saveTasks(){ try{ localStorage.setItem('ht_tasks', JSON.stringify(tasks)); }catch(e){} }
+function loadHabits(){ try{ var s = localStorage.getItem('ht_habits'); if(s) return JSON.parse(s); }catch(e){} return []; }
+function saveHabits(){ try{ localStorage.setItem('ht_habits', JSON.stringify(habits)); }catch(e){} }
+function loadExercises(){ try{ var s = localStorage.getItem('ht_exercises'); if(s) return JSON.parse(s); }catch(e){} return []; }
+function saveExercises(){ try{ localStorage.setItem('ht_exercises', JSON.stringify(exercises)); }catch(e){} }
+
+function dateKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function escapeHtml(text){ if(!text) return ''; return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function formatTime(sec){ var m = Math.floor(sec / 60); var s = sec % 60; return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0'); }
+
+function showToast(msg, warn){
+  var t = document.querySelector('.toast');
+  if(t) t.remove();
+  t = document.createElement('div');
+  t.className = 'toast' + (warn ? ' warning' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ if(t && t.parentNode) t.remove(); }, 2500);
+}
+function showConfirm(message, onYes, onNo){
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.setAttribute('role', 'dialog');
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = '<div class="modal-text">' + escapeHtml(message) + '</div>' +
+    '<div class="modal-actions">' +
+      '<button class="btn btn-red" id="modalNo">ОТМЕНА</button>' +
+      '<button class="btn btn-green" id="modalYes">ДА</button>' +
+    '</div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  function close(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+  box.querySelector('#modalYes').onclick = function(){ close(); if(onYes) onYes(); };
+  box.querySelector('#modalNo').onclick = function(){ close(); if(onNo) onNo(); };
+  overlay.onclick = function(e){ if(e.target === overlay){ close(); if(onNo) onNo(); } };
+  box.querySelector('#modalYes').focus();
+}
+
+/* ============================================================
+   ВКЛАДКИ И ЗАДАЧИ
+   ============================================================ */
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById('tabTasks').classList.toggle('active', tab === 'tasks');
+  document.getElementById('tabHabits').classList.toggle('active', tab === 'habits');
+  document.getElementById('tabTraining').classList.toggle('active', tab === 'training');
+  document.getElementById('tasksTab').style.display = tab === 'tasks' ? 'block' : 'none';
+  document.getElementById('habitsTab').style.display = tab === 'habits' ? 'block' : 'none';
+  document.getElementById('trainingTab').style.display = tab === 'training' ? 'block' : 'none';
+  if(tab === 'tasks') renderTasks();
+  else if(tab === 'habits') renderHabits();
+  else renderTraining();
+}
+
+function changeDate(delta){ currentDate.setDate(currentDate.getDate() + delta); renderTasks(); }
+function goToday(){ currentDate = new Date(); currentDate.setHours(0,0,0,0); renderTasks(); }
+
+function renderTasks(){
+  var dk = dateKey(currentDate);
+  var today = new Date(); today.setHours(0,0,0,0);
+  var isToday = currentDate.getTime() === today.getTime();
+  var display = currentDate.getDate() + ' ' + MONTHS[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+  if(isToday) display = 'СЕГОДНЯ, ' + display;
+  document.getElementById('dateDisplay').textContent = display;
+
+  var dayTasks = tasks[dk] || [];
+  var list = document.getElementById('tasksList');
+  list.innerHTML = '';
+  if(dayTasks.length === 0){
+    list.innerHTML = '<div class="empty-state">НЕТ ЗАДАЧ НА ЭТОТ ДЕНЬ<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВУЮ ЗАДАЧУ ВЫШЕ</span></div>';
+  } else {
+    dayTasks.forEach(function(t, idx){
+      var item = document.createElement('div');
+      item.className = 'item' + (t.done ? ' done' : '');
+      item.innerHTML =
+        '<div class="item-checkbox' + (t.done ? ' checked' : '') + '" role="checkbox" tabindex="0" onclick="toggleTask(' + idx + ')" onkeypress="if(event.key===\'Enter\'||event.key===\' \')toggleTask(' + idx + ')"></div>' +
+        '<div class="item-text">' + escapeHtml(t.text) + '</div>' +
+        '<button class="item-delete" onclick="deleteTask(' + idx + ')">X</button>';
+      list.appendChild(item);
+    });
+  }
+  var doneCount = dayTasks.filter(function(t){ return t.done; }).length;
+  var total = dayTasks.length;
+  document.getElementById('progressText').textContent = doneCount + ' / ' + total;
+  document.getElementById('progressBar').style.width = (total > 0 ? (doneCount / total) * 100 : 0) + '%';
+}
+function addTask(){
+  var inp = document.getElementById('taskInput');
+  var text = inp.value.trim();
+  if(!text){ showToast('ВВЕДИТЕ ЗАДАЧУ', true); return; }
+  var dk = dateKey(currentDate);
+  if(!tasks[dk]) tasks[dk] = [];
+  tasks[dk].push({ text: text, done: false, time: Date.now() });
+  saveTasks(); inp.value = ''; renderTasks(); showToast('ЗАДАЧА ДОБАВЛЕНА');
+}
+function toggleTask(idx){
+  var dk = dateKey(currentDate);
+  if(!tasks[dk] || !tasks[dk][idx]) return;
+  tasks[dk][idx].done = !tasks[dk][idx].done;
+  saveTasks(); renderTasks();
+}
+function deleteTask(idx){
+  var dk = dateKey(currentDate);
+  if(!tasks[dk]) return;
+  showConfirm('УДАЛИТЬ ЗАДАЧУ?', function(){
+    tasks[dk].splice(idx, 1); saveTasks(); renderTasks(); showToast('ЗАДАЧА УДАЛЕНА');
+  });
+}
+
+/* ============================================================
+   ПРИВЫЧКИ
+   ============================================================ */
+function getWeekStart(d){
+  var day = d.getDay(); var diff = (day === 0 ? -6 : 1 - day);
+  var start = new Date(d); start.setDate(start.getDate() + diff); start.setHours(0,0,0,0); return start;
+}
+function renderHabits(){
+  var list = document.getElementById('habitsList'); list.innerHTML = '';
+  if(habits.length === 0){
+    list.innerHTML = '<div class="empty-state">НЕТ ПРИВЫЧЕК<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВУЮ ПРИВЫЧКУ ВЫШЕ</span></div>'; return;
+  }
+  var today = new Date(); today.setHours(0,0,0,0);
+  var weekStart = getWeekStart(today);
+  habits.forEach(function(h, hIdx){
+    var card = document.createElement('div'); card.className = 'habit-card';
+    var streak = calcStreak(h);
+    var totalDone = Object.keys(h.days || {}).filter(function(k){ return h.days[k]; }).length;
+    var weekDone = 0;
+    for(var i=0;i<7;i++){
+      var d = new Date(weekStart); d.setDate(d.getDate() + i);
+      if(h.days && h.days[dateKey(d)]) weekDone++;
+    }
+    var html = '<div class="habit-header"><div class="habit-name">' + escapeHtml(h.name) + '</div>' +
+      '<div class="habit-streak">СЕРИЯ ' + streak + '</div>' +
+      '<button class="item-delete" onclick="deleteHabit(' + hIdx + ')">X</button></div>';
+    html += '<div class="habit-stats"><span>ВСЕГО: ' + totalDone + '</span><span>НЕДЕЛЯ: ' + weekDone + '/7</span></div><div class="habits-grid">';
+    for(var i=0;i<7;i++) html += '<div class="habit-day-header">' + DAYS_SHORT[i] + '</div>';
+    for(var i=0;i<7;i++){
+      var d = new Date(weekStart); d.setDate(d.getDate() + i); var dk = dateKey(d);
+      var isDone = h.days && h.days[dk]; var isToday = d.getTime() === today.getTime(); var isFuture = d.getTime() > today.getTime();
+      var cls = 'habit-day' + (isDone ? ' done' : '') + (isToday ? ' today' : '') + (isFuture ? ' future' : '');
+      var onclick = isFuture ? '' : ' onclick="toggleHabit(' + hIdx + ',\'' + dk + '\')"';
+      html += '<div class="' + cls + '"' + onclick + '></div>';
+    }
+    card.innerHTML = html + '</div>'; list.appendChild(card);
+  });
+}
+function addHabit(){
+  var inp = document.getElementById('habitInput'); var text = inp.value.trim();
+  if(!text){ showToast('ВВЕДИТЕ ПРИВЫЧКУ', true); return; }
+  habits.push({ name: text, days: {}, created: Date.now() });
+  saveHabits(); inp.value = ''; renderHabits(); showToast('ПРИВЫЧКА ДОБАВЛЕНА');
+}
+function toggleHabit(hIdx, dk){
+  if(!habits[hIdx]) return;
+  if(!habits[hIdx].days) habits[hIdx].days = {};
+  habits[hIdx].days[dk] = !habits[hIdx].days[dk];
+  saveHabits(); renderHabits();
+}
+function deleteHabit(hIdx){
+  showConfirm('УДАЛИТЬ ПРИВЫЧКУ?', function(){
+    habits.splice(hIdx, 1); saveHabits(); renderHabits(); showToast('ПРИВЫЧКА УДАЛЕНА');
+  });
+}
+function calcStreak(h){
+  if(!h.days) return 0; var streak = 0; var d = new Date(); d.setHours(0,0,0,0);
+  while(true){
+    var dk = dateKey(d);
+    if(h.days[dk]){ streak++; d.setDate(d.getDate() - 1); }
+    else {
+      if(streak === 0){ d.setDate(d.getDate() - 1); var dk2 = dateKey(d); if(h.days[dk2]){ streak++; d.setDate(d.getDate() - 1); continue; } }
+      break;
+    }
+  }
+  return streak;
+}
+
+/* ============================================================
+   ТРЕНИРОВКА
+   ============================================================ */
+function addExercise(){
+  if(training.started){ showToast('ТРЕНИРОВКА ИДЁТ', true); return; }
+  var nameInp = document.getElementById('exerciseInput');
+  var timeInp = document.getElementById('exerciseTime');
+  var name = nameInp.value.trim(); 
+  
+  // Очистка ввода от всего, кроме цифр
+  var rawSec = timeInp.value.replace(/\D/g, ''); 
+  var sec = parseInt(rawSec, 10);
+  
+  if(!name){ showToast('ВВЕДИТЕ НАЗВАНИЕ', true); return; }
+  if(isNaN(sec) || sec < 5 || sec > 600){ showToast('ВРЕМЯ 5-600 СЕК', true); return; }
+  
+  exercises.push({ name: name, seconds: sec, id: Date.now() });
+  saveExercises(); 
+  nameInp.value = ''; 
+  timeInp.value = '30';
+  renderTraining(); 
+  showToast('УПРАЖНЕНИЕ ДОБАВЛЕНО');
+}
+
+function deleteExercise(idx){
+  if(training.started){ showToast('ТРЕНИРОВКА ИДЁТ', true); return; }
+  showConfirm('УДАЛИТЬ УПРАЖНЕНИЕ?', function(){
+    exercises.splice(idx, 1); saveExercises(); renderTraining(); showToast('УПРАЖНЕНИЕ УДАЛЕНО');
+  });
+}
+
+// ЛОГИКА DRAG & DROP
+var dragSrcIdx = null;
+function handleDragStart(e, idx) {
+  if(training.started) return;
+  dragSrcIdx = idx;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', idx);
+}
+function handleDragOver(e, idx) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+function handleDrop(e, idx) {
+  e.preventDefault();
+  if(dragSrcIdx === null || dragSrcIdx === idx) return;
+  
+  var item = exercises.splice(dragSrcIdx, 1)[0];
+  exercises.splice(idx, 0, item);
+  saveExercises();
+  renderTraining();
+}
+function handleDragEnd(e) {
+  document.querySelectorAll('.exercise-item').forEach(el => el.classList.remove('dragging'));
+  dragSrcIdx = null;
+}
+
+function startTraining(){
+  if(exercises.length === 0){ showToast('СНАЧАЛА ДОБАВЬТЕ УПРАЖНЕНИЯ', true); return; }
+  training.started = true;
+  training.doneSet = {};
+  training.activeIndex = -1;
+  startExercise(0);
+  showToast('ТРЕНИРОВКА НАЧАТА');
+}
+
+function startExercise(idx){
+  if(idx < 0 || idx >= exercises.length) return;
+  stopTimer();
+  training.activeIndex = idx;
+  training.total = exercises[idx].seconds;
+  training.endTime = Date.now() + (exercises[idx].seconds * 1000);
+  renderTraining();
+  startTimer();
+}
+
+function startTimer(){
+  stopTimer();
+  updateTimerUI();
+  
+  training.timerId = setInterval(function(){
+    var now = Date.now();
+    var diff = training.endTime - now;
+    
+    if(diff <= 0){
+      stopTimer();
+      training.doneSet[training.activeIndex] = true;
+      updateTimerUI();
+      renderTraining();
+      showToast('УПРАЖНЕНИЕ ВЫПОЛНЕНО');
+      return;
+    }
+    updateTimerUI();
+  }, 200);
+}
+
+function stopTimer(){ if(training.timerId){ clearInterval(training.timerId); training.timerId = null; } }
+
+function updateTimerUI(){
+  var el = document.getElementById('activeExerciseTimer');
+  var bar = document.getElementById('activeExerciseProgress');
+  var hint = document.getElementById('trainingHint');
+  var btn = document.getElementById('btnNextExercise');
+  if(!el) return;
+
+  var now = Date.now();
+  var diff = training.endTime - now;
+  var remaining = Math.max(0, Math.ceil(diff / 1000));
+  var isDone = !!training.doneSet[training.activeIndex];
+
+  el.textContent = formatTime(remaining);
+  var pct = training.total > 0 ? ((training.total - remaining) / training.total) * 100 : 0;
+  if(bar) bar.style.width = pct + '%';
+  
+  el.classList.toggle('finished', isDone);
+  
+  if(btn) btn.disabled = !isDone;
+  
+  if(hint){
+    hint.textContent = isDone ? 'Время вышло — можно перейти к следующему' : 'Дождитесь окончания таймера';
+  }
+}
+
+function nextExercise(){
+  if(!training.doneSet[training.activeIndex]){
+    showToast('СНАЧАЛА ЗАВЕРШИТЕ ТЕКУЩЕЕ', true); return;
+  }
+  var next = training.activeIndex + 1;
+  if(next >= exercises.length){
+    showToast('ВСЕ УПРАЖНЕНИЯ ВЫПОЛНЕНЫ');
+    training.activeIndex = -1; training.started = false;
+    renderTraining(); return;
+  }
+  startExercise(next);
+}
+
+function resetTraining(){
+  showConfirm('СБРОСИТЬ ТРЕНИРОВКУ?', function(){
+    stopTimer();
+    training.activeIndex = -1; training.endTime = 0; training.total = 0;
+    training.doneSet = {}; training.started = false;
+    renderTraining(); showToast('ТРЕНИРОВКА СБРОШЕНА');
+  });
+}
+
+function renderTraining(){
+  var list = document.getElementById('exercisesList');
+  var activeBox = document.getElementById('trainingActive');
+  var form = document.getElementById('exerciseForm');
+  var startBox = document.getElementById('startTrainingBox');
+  list.innerHTML = '';
+
+  if(training.started) form.classList.add('hidden');
+  else form.classList.remove('hidden');
+
+  if(exercises.length === 0){
+    activeBox.style.display = 'none'; startBox.style.display = 'none';
+    list.innerHTML = '<div class="empty-state">НЕТ УПРАЖНЕНИЙ<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВОЕ УПРАЖНЕНИЕ ВЫШЕ</span></div>';
+    return;
+  }
+
+  if(!training.started && training.activeIndex === -1){
+    startBox.style.display = 'block';
+    var total = exercises.reduce(function(s, e){ return s + e.seconds; }, 0);
+    document.getElementById('startTrainingHint').textContent =
+      'УПРАЖНЕНИЙ: ' + exercises.length + ' • ОБЩЕЕ ВРЕМЯ: ' + formatTime(total);
+  } else {
+    startBox.style.display = 'none';
+  }
+
+  if(training.activeIndex >= 0 && training.activeIndex < exercises.length){
+    activeBox.style.display = 'block';
+    document.getElementById('activeExerciseName').textContent = escapeHtml(exercises[training.activeIndex].name);
+    document.getElementById('activeExerciseStep').textContent = (training.activeIndex + 1) + ' / ' + exercises.length;
+    updateTimerUI();
+  } else {
+    activeBox.style.display = 'none';
+  }
+
+  exercises.forEach(function(ex, idx){
+    var done = !!training.doneSet[idx];
+    var isActive = training.activeIndex === idx;
+    
+    var cls = 'exercise-item';
+    if(done) cls += ' done';
+    if(isActive) cls += ' active';
+
+    var item = document.createElement('div');
+    item.className = cls;
+    item.draggable = !training.started; 
+    
+    item.ondragstart = function(e) { handleDragStart(e, idx); };
+    item.ondragover = function(e) { handleDragOver(e, idx); };
+    item.ondrop = function(e) { handleDrop(e, idx); };
+    item.ondragend = handleDragEnd;
+
+    var actionHtml = '';
+    if(done){
+      actionHtml = '<span class="exercise-time" style="border-color:#4aff6a;color:#4aff6a;">ГОТОВО</span>';
+    } else if(isActive){
+      actionHtml = '<span class="exercise-time">ИДЁТ</span>';
+    }
+
+    var handleHtml = training.started ? '' : '<div class="drag-handle">⋮⋮</div>';
+    
+    item.innerHTML =
+      handleHtml +
+      '<div class="exercise-num">' + (idx + 1) + '</div>' +
+      '<div class="exercise-name">' + escapeHtml(ex.name) + '</div>' +
+      '<span class="exercise-time">' + formatTime(ex.seconds) + '</span>' +
+      actionHtml +
+      (training.started ? '' : '<button class="item-delete" onclick="deleteExercise(' + idx + ')">X</button>');
+
+    list.appendChild(item);
+  });
+}
+
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('taskInput').addEventListener('keypress', function(e){ if(e.key === 'Enter') addTask(); });
+  document.getElementById('habitInput').addEventListener('keypress', function(e){ if(e.key === 'Enter') addHabit(); });
+  document.getElementById('exerciseInput').addEventListener('keypress', function(e){ if(e.key === 'Enter') addExercise(); });
+  document.getElementById('exerciseTime').addEventListener('keypress', function(e){ if(e.key === 'Enter') addExercise(); });
+  renderTasks();
+});
+</script>
+</body>
+</html>
