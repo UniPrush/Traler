@@ -133,6 +133,7 @@ input[type=number] {
 .btn:disabled{opacity:0.4;cursor:not-allowed;}
 .btn-green{background:#2a7a3a;}
 .btn-red{background:#8a2a2a;}
+.btn-blue{background:#2a4a7a;}
 .btn-big{
   width:100%;padding:calc(16px * var(--scale-factor));
   font-size:calc(0.6rem * var(--font-size-multiplier) * var(--scale-factor));
@@ -258,6 +259,30 @@ input[type=number] {
 }
 .modal-actions .btn{flex:1;min-width:calc(100px * var(--scale-factor));}
 
+/* ======================= РАСПИСАНИЕ ======================= */
+.week-days{
+  display:flex; gap:calc(4px * var(--scale-factor));
+  margin-bottom:calc(15px * var(--scale-factor)); flex-wrap:wrap;
+}
+.week-day-btn{
+  flex:1; background:var(--bg-card); border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  color:#fff; font-family:inherit; font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
+  padding:calc(8px * var(--scale-factor)) calc(4px * var(--scale-factor));
+  cursor:pointer; border-radius:calc(8px * var(--scale-factor)); text-transform:uppercase;
+  transition:all 0.15s ease; min-width:calc(45px * var(--scale-factor));
+}
+.week-day-btn:hover{transform:scale(1.05);}
+.week-day-btn.active{background:var(--border-color); color:#121624; font-weight:bold; border-color:#fff;}
+.week-day-btn.today{border-color:#4aff6a; box-shadow:0 0 calc(10px * var(--scale-factor)) rgba(74,255,106,0.3);}
+
+.copy-menu{
+  display:flex; gap:calc(8px * var(--scale-factor));
+  align-items:center; flex-wrap:wrap; margin-bottom:calc(15px * var(--scale-factor));
+  background:var(--bg-secondary); border:calc(2px * var(--scale-factor)) solid var(--border-color);
+  padding:calc(10px * var(--scale-factor)); border-radius:calc(12px * var(--scale-factor));
+}
+.copy-menu span{font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor)); color:var(--text-secondary);}
+
 /* ======================= ТРЕНИРОВКА ======================= */
 .exercise-item{
   display:flex;align-items:center;gap:calc(10px * var(--scale-factor));
@@ -271,7 +296,6 @@ input[type=number] {
 }
 .exercise-item.done{opacity:0.5;border-color:#4a8a4a;}
 .exercise-item.done .exercise-name{text-decoration:line-through;color:var(--text-secondary);}
-.exercise-item.locked{opacity:0.6;}
 .exercise-item.dragging{opacity:0.4; border-style:dashed;}
 .exercise-num{
   min-width:calc(28px * var(--scale-factor));
@@ -303,6 +327,15 @@ input[type=number] {
   font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
   color:#ffaa66;font-weight:bold;white-space:nowrap;
 }
+.exercise-time.rest{border-color:#4a8a8a;color:#4a8a8a;}
+.item-edit{
+  background:transparent;border:none;color:#ffaa66;
+  font-size:calc(0.6rem * var(--scale-factor));cursor:pointer;
+  padding:calc(4px * var(--scale-factor));transition:all 0.15s ease;
+  font-family:inherit;
+}
+.item-edit:hover{transform:scale(1.2);color:#fff;}
+
 .active-timer{
   text-align:center;
   font-size:calc(1.2rem * var(--scale-factor));
@@ -376,17 +409,44 @@ input[type=number] {
 
   <!-- ===================== ТРЕНИРОВКА ===================== -->
   <div id="trainingTab" style="display:none;">
+    
+    <!-- Расписание -->
+    <div class="week-days" id="weekDays">
+      <button class="week-day-btn" onclick="selectDay(0)">ПН</button>
+      <button class="week-day-btn" onclick="selectDay(1)">ВТ</button>
+      <button class="week-day-btn" onclick="selectDay(2)">СР</button>
+      <button class="week-day-btn" onclick="selectDay(3)">ЧТ</button>
+      <button class="week-day-btn" onclick="selectDay(4)">ПТ</button>
+      <button class="week-day-btn" onclick="selectDay(5)">СБ</button>
+      <button class="week-day-btn" onclick="selectDay(6)">ВС</button>
+    </div>
+
+    <!-- Копирование -->
+    <div class="copy-menu" id="copyMenu" style="display:none;">
+      <span>КОПИРОВАТЬ В:</span>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(0)">ПН</button>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(1)">ВТ</button>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(2)">СР</button>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(3)">ЧТ</button>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(4)">ПТ</button>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(5)">СБ</button>
+      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(6)">ВС</button>
+    </div>
+
+    <!-- Форма добавления -->
     <div class="add-form" id="exerciseForm">
       <input type="text" class="add-input" id="exerciseInput" placeholder="УПРАЖНЕНИЕ..." maxlength="60">
       <input type="number" class="add-input" id="exerciseTime" placeholder="СЕК" min="5" max="600" value="30" style="max-width:calc(110px * var(--scale-factor));">
       <button class="btn btn-green" onclick="addExercise()">+ ДОБАВИТЬ</button>
     </div>
 
+    <!-- Кнопка старта -->
     <div class="start-training-box" id="startTrainingBox" style="display:none;">
       <button class="btn btn-green btn-big" onclick="startTraining()">▶ НАЧАТЬ ТРЕНИРОВКУ</button>
       <div class="start-training-hint" id="startTrainingHint"></div>
     </div>
 
+    <!-- Активное упражнение -->
     <div class="progress-section" id="trainingActive" style="display:none;">
       <div class="progress-label">
         <span>СЕЙЧАС: <strong id="activeExerciseName">—</strong></span>
@@ -405,6 +465,7 @@ input[type=number] {
       </div>
     </div>
 
+    <!-- Список -->
     <div class="items-list" id="exercisesList"></div>
   </div>
 </div>
@@ -418,7 +479,10 @@ var currentDate = new Date();
 currentDate.setHours(0,0,0,0);
 var tasks = loadTasks();
 var habits = loadHabits();
-var exercises = loadExercises(); 
+
+// Структура: { "0": [{name, seconds, id}], "1": [...], ... }
+var exercisesData = loadExercises(); 
+var currentDayIndex = (new Date().getDay() + 6) % 7; // 0 = ПН, 6 = ВС
 var training = {
   activeIndex: -1,   
   endTime: 0,        
@@ -438,8 +502,14 @@ function loadTasks(){ try{ var s = localStorage.getItem('ht_tasks'); if(s) retur
 function saveTasks(){ try{ localStorage.setItem('ht_tasks', JSON.stringify(tasks)); }catch(e){} }
 function loadHabits(){ try{ var s = localStorage.getItem('ht_habits'); if(s) return JSON.parse(s); }catch(e){} return []; }
 function saveHabits(){ try{ localStorage.setItem('ht_habits', JSON.stringify(habits)); }catch(e){} }
-function loadExercises(){ try{ var s = localStorage.getItem('ht_exercises'); if(s) return JSON.parse(s); }catch(e){} return []; }
-function saveExercises(){ try{ localStorage.setItem('ht_exercises', JSON.stringify(exercises)); }catch(e){} }
+function loadExercises(){ 
+  try{ 
+    var s = localStorage.getItem('ht_exercises_v2'); 
+    if(s) return JSON.parse(s); 
+  }catch(e){} 
+  return {"0":[],"1":[],"2":[],"3":[],"4":[],"5":[],"6":[]}; 
+}
+function saveExercises(){ try{ localStorage.setItem('ht_exercises_v2', JSON.stringify(exercisesData)); }catch(e){} }
 
 function dateKey(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function escapeHtml(text){ if(!text) return ''; return String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
@@ -485,6 +555,7 @@ function switchTab(tab){
   document.getElementById('tasksTab').style.display = tab === 'tasks' ? 'block' : 'none';
   document.getElementById('habitsTab').style.display = tab === 'habits' ? 'block' : 'none';
   document.getElementById('trainingTab').style.display = tab === 'training' ? 'block' : 'none';
+  
   if(tab === 'tasks') renderTasks();
   else if(tab === 'habits') renderHabits();
   else renderTraining();
@@ -614,33 +685,103 @@ function calcStreak(h){
 }
 
 /* ============================================================
-   ТРЕНИРОВКА
+   ТРЕНИРОВКА (РАСПИСАНИЕ И ЛОГИКА)
    ============================================================ */
+function selectDay(idx){
+  if(training.started){ showToast('СНАЧАЛА ЗАВЕРШИТЕ ТРЕНИРОВКУ', true); return; }
+  currentDayIndex = idx;
+  renderTraining();
+}
+
+function copyToDay(targetIdx){
+  if(currentDayIndex === targetIdx) return;
+  var srcList = exercisesData[currentDayIndex] || [];
+  if(srcList.length === 0){
+    showToast('НЕЧЕГО КОПИРОВАТЬ', true); return;
+  }
+  showConfirm('СКОПИРОВАТЬ ТРЕНИРОВКУ В ' + DAYS_SHORT[targetIdx] + '? ТЕКУЩИЙ СПИСОК БУДЕТ ЗАМЕНЕН.', function(){
+    // Глубокое клонирование с новыми ID
+    exercisesData[targetIdx] = srcList.map(function(ex){
+      return { name: ex.name, seconds: ex.seconds, id: Date.now() + Math.random() };
+    });
+    saveExercises();
+    showToast('СКОПИРОВАНО В ' + DAYS_SHORT[targetIdx]);
+    currentDayIndex = targetIdx;
+    renderTraining();
+  });
+}
+
 function addExercise(){
   if(training.started){ showToast('ТРЕНИРОВКА ИДЁТ', true); return; }
   var nameInp = document.getElementById('exerciseInput');
   var timeInp = document.getElementById('exerciseTime');
   var name = nameInp.value.trim(); 
   
-  // Очистка ввода от всего, кроме цифр
   var rawSec = timeInp.value.replace(/\D/g, ''); 
   var sec = parseInt(rawSec, 10);
   
   if(!name){ showToast('ВВЕДИТЕ НАЗВАНИЕ', true); return; }
   if(isNaN(sec) || sec < 5 || sec > 600){ showToast('ВРЕМЯ 5-600 СЕК', true); return; }
   
-  exercises.push({ name: name, seconds: sec, id: Date.now() });
+  if(!exercisesData[currentDayIndex]) exercisesData[currentDayIndex] = [];
+  
+  // Добавляем упражнение
+  exercisesData[currentDayIndex].push({ name: name, seconds: sec, id: Date.now() });
+  
+  // Автоматически добавляем отдых 15 сек
+  exercisesData[currentDayIndex].push({ name: 'отдых', seconds: 15, id: Date.now() + 1 });
+  
   saveExercises(); 
   nameInp.value = ''; 
   timeInp.value = '30';
   renderTraining(); 
-  showToast('УПРАЖНЕНИЕ ДОБАВЛЕНО');
+  showToast('УПРАЖНЕНИЕ ДОБАВЛЕНО (+15с ОТДЫХ)');
+}
+
+function editExercise(idx){
+  if(training.started) return;
+  var ex = exercisesData[currentDayIndex][idx];
+  if(!ex) return;
+
+  // Создаём модалку для редактирования
+  var overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  var box = document.createElement('div');
+  box.className = 'modal-box';
+  box.innerHTML = 
+    '<div class="modal-text" style="margin-bottom:15px;">РЕДАКТИРОВАТЬ</div>' +
+    '<input type="text" id="editName" class="add-input" value="' + escapeHtml(ex.name) + '" style="width:100%;margin-bottom:10px;">' +
+    '<input type="number" id="editTime" class="add-input" value="' + ex.seconds + '" style="width:100%;margin-bottom:15px;">' +
+    '<div class="modal-actions">' +
+      '<button class="btn btn-red" id="editCancel">ОТМЕНА</button>' +
+      '<button class="btn btn-green" id="editSave">СОХРАНИТЬ</button>' +
+    '</div>';
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  box.querySelector('#editCancel').onclick = function(){ overlay.remove(); };
+  box.querySelector('#editSave').onclick = function(){
+    var newName = box.querySelector('#editName').value.trim();
+    var newSec = parseInt(box.querySelector('#editTime').value.replace(/\D/g, ''), 10);
+    if(!newName){ showToast('ВВЕДИТЕ НАЗВАНИЕ', true); return; }
+    if(isNaN(newSec) || newSec < 5 || newSec > 600){ showToast('ВРЕМЯ 5-600 СЕК', true); return; }
+    
+    exercisesData[currentDayIndex][idx].name = newName;
+    exercisesData[currentDayIndex][idx].seconds = newSec;
+    saveExercises();
+    overlay.remove();
+    renderTraining();
+    showToast('СОХРАНЕНО');
+  };
 }
 
 function deleteExercise(idx){
   if(training.started){ showToast('ТРЕНИРОВКА ИДЁТ', true); return; }
   showConfirm('УДАЛИТЬ УПРАЖНЕНИЕ?', function(){
-    exercises.splice(idx, 1); saveExercises(); renderTraining(); showToast('УПРАЖНЕНИЕ УДАЛЕНО');
+    exercisesData[currentDayIndex].splice(idx, 1); 
+    saveExercises(); 
+    renderTraining(); 
+    showToast('УПРАЖНЕНИЕ УДАЛЕНО');
   });
 }
 
@@ -653,16 +794,13 @@ function handleDragStart(e, idx) {
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', idx);
 }
-function handleDragOver(e, idx) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
+function handleDragOver(e, idx) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
 function handleDrop(e, idx) {
   e.preventDefault();
   if(dragSrcIdx === null || dragSrcIdx === idx) return;
-  
-  var item = exercises.splice(dragSrcIdx, 1)[0];
-  exercises.splice(idx, 0, item);
+  var list = exercisesData[currentDayIndex];
+  var item = list.splice(dragSrcIdx, 1)[0];
+  list.splice(idx, 0, item);
   saveExercises();
   renderTraining();
 }
@@ -672,7 +810,8 @@ function handleDragEnd(e) {
 }
 
 function startTraining(){
-  if(exercises.length === 0){ showToast('СНАЧАЛА ДОБАВЬТЕ УПРАЖНЕНИЯ', true); return; }
+  var list = exercisesData[currentDayIndex] || [];
+  if(list.length === 0){ showToast('СНАЧАЛА ДОБАВЬТЕ УПРАЖНЕНИЯ', true); return; }
   training.started = true;
   training.doneSet = {};
   training.activeIndex = -1;
@@ -681,11 +820,12 @@ function startTraining(){
 }
 
 function startExercise(idx){
-  if(idx < 0 || idx >= exercises.length) return;
+  var list = exercisesData[currentDayIndex] || [];
+  if(idx < 0 || idx >= list.length) return;
   stopTimer();
   training.activeIndex = idx;
-  training.total = exercises[idx].seconds;
-  training.endTime = Date.now() + (exercises[idx].seconds * 1000);
+  training.total = list[idx].seconds;
+  training.endTime = Date.now() + (list[idx].seconds * 1000);
   renderTraining();
   startTimer();
 }
@@ -703,7 +843,7 @@ function startTimer(){
       training.doneSet[training.activeIndex] = true;
       updateTimerUI();
       renderTraining();
-      showToast('УПРАЖНЕНИЕ ВЫПОЛНЕНО');
+      showToast('ВЫПОЛНЕНО');
       return;
     }
     updateTimerUI();
@@ -729,7 +869,6 @@ function updateTimerUI(){
   if(bar) bar.style.width = pct + '%';
   
   el.classList.toggle('finished', isDone);
-  
   if(btn) btn.disabled = !isDone;
   
   if(hint){
@@ -741,8 +880,10 @@ function nextExercise(){
   if(!training.doneSet[training.activeIndex]){
     showToast('СНАЧАЛА ЗАВЕРШИТЕ ТЕКУЩЕЕ', true); return;
   }
+  var list = exercisesData[currentDayIndex] || [];
   var next = training.activeIndex + 1;
-  if(next >= exercises.length){
+  
+  if(next >= list.length){
     showToast('ВСЕ УПРАЖНЕНИЯ ВЫПОЛНЕНЫ');
     training.activeIndex = -1; training.started = false;
     renderTraining(); return;
@@ -764,38 +905,56 @@ function renderTraining(){
   var activeBox = document.getElementById('trainingActive');
   var form = document.getElementById('exerciseForm');
   var startBox = document.getElementById('startTrainingBox');
+  var copyMenu = document.getElementById('copyMenu');
+  
   list.innerHTML = '';
 
-  if(training.started) form.classList.add('hidden');
-  else form.classList.remove('hidden');
+  // Отрисовка дней недели
+  var dayBtns = document.querySelectorAll('.week-day-btn');
+  var todayIdx = (new Date().getDay() + 6) % 7;
+  dayBtns.forEach(function(btn, i) {
+    btn.classList.toggle('active', i === currentDayIndex);
+    btn.classList.toggle('today', i === todayIdx);
+  });
 
-  if(exercises.length === 0){
+  var currentList = exercisesData[currentDayIndex] || [];
+
+  if(training.started) {
+    form.classList.add('hidden');
+    copyMenu.style.display = 'none';
+  } else {
+    form.classList.remove('hidden');
+    copyMenu.style.display = 'flex';
+  }
+
+  if(currentList.length === 0){
     activeBox.style.display = 'none'; startBox.style.display = 'none';
-    list.innerHTML = '<div class="empty-state">НЕТ УПРАЖНЕНИЙ<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВОЕ УПРАЖНЕНИЕ ВЫШЕ</span></div>';
+    list.innerHTML = '<div class="empty-state">НЕТ УПРАЖНЕНИЙ НА ' + DAYS_SHORT[currentDayIndex] + '<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВОЕ УПРАЖНЕНИЕ ВЫШЕ</span></div>';
     return;
   }
 
   if(!training.started && training.activeIndex === -1){
     startBox.style.display = 'block';
-    var total = exercises.reduce(function(s, e){ return s + e.seconds; }, 0);
+    var total = currentList.reduce(function(s, e){ return s + e.seconds; }, 0);
     document.getElementById('startTrainingHint').textContent =
-      'УПРАЖНЕНИЙ: ' + exercises.length + ' • ОБЩЕЕ ВРЕМЯ: ' + formatTime(total);
+      'УПРАЖНЕНИЙ: ' + currentList.length + ' • ОБЩЕЕ ВРЕМЯ: ' + formatTime(total);
   } else {
     startBox.style.display = 'none';
   }
 
-  if(training.activeIndex >= 0 && training.activeIndex < exercises.length){
+  if(training.activeIndex >= 0 && training.activeIndex < currentList.length){
     activeBox.style.display = 'block';
-    document.getElementById('activeExerciseName').textContent = escapeHtml(exercises[training.activeIndex].name);
-    document.getElementById('activeExerciseStep').textContent = (training.activeIndex + 1) + ' / ' + exercises.length;
+    document.getElementById('activeExerciseName').textContent = escapeHtml(currentList[training.activeIndex].name);
+    document.getElementById('activeExerciseStep').textContent = (training.activeIndex + 1) + ' / ' + currentList.length;
     updateTimerUI();
   } else {
     activeBox.style.display = 'none';
   }
 
-  exercises.forEach(function(ex, idx){
+  currentList.forEach(function(ex, idx){
     var done = !!training.doneSet[idx];
     var isActive = training.activeIndex === idx;
+    var isRest = ex.name.toLowerCase() === 'отдых';
     
     var cls = 'exercise-item';
     if(done) cls += ' done';
@@ -818,14 +977,18 @@ function renderTraining(){
     }
 
     var handleHtml = training.started ? '' : '<div class="drag-handle">⋮⋮</div>';
-    
+    var editBtn = training.started ? '' : '<button class="item-edit" onclick="editExercise(' + idx + ')">✎</button>';
+    var deleteBtn = training.started ? '' : '<button class="item-delete" onclick="deleteExercise(' + idx + ')">X</button>';
+    var timeCls = isRest ? 'exercise-time rest' : 'exercise-time';
+
     item.innerHTML =
       handleHtml +
-      '<div class="exercise-num">' + (idx + 1) + '</div>' +
-      '<div class="exercise-name">' + escapeHtml(ex.name) + '</div>' +
-      '<span class="exercise-time">' + formatTime(ex.seconds) + '</span>' +
+      '<div class="exercise-num" style="' + (isRest ? 'border-color:#4a8a8a;color:#4a8a8a;' : '') + '">' + (idx + 1) + '</div>' +
+      '<div class="exercise-name" style="' + (isRest ? 'color:#4a8a8a;font-style:italic;' : '') + '">' + escapeHtml(ex.name) + '</div>' +
+      '<span class="' + timeCls + '">' + formatTime(ex.seconds) + '</span>' +
       actionHtml +
-      (training.started ? '' : '<button class="item-delete" onclick="deleteExercise(' + idx + ')">X</button>');
+      editBtn +
+      deleteBtn;
 
     list.appendChild(item);
   });
