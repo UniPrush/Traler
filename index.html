@@ -3,397 +3,673 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>✅</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🎯</text></svg>">
 <title>Habit Tracker | Трекер привычек</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg-primary:#1e2538; --bg-secondary:#151c2c; --bg-card:#2c334a; --bg-input:#2a2f40;
-  --border-color:#ffaa66; --text-color:#FFFFFF; --text-secondary:#aaa;
-  --btn-bg:#5e4a3a; --btn-shadow:#2a1e14; --card-shadow:#121624;
-  --font-size-multiplier:1; --scale-factor:1;
+:root {
+  /* Новая цветовая палитра (Modern Light) */
+  --bg-body: #f4f7f6;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #f9fafb;
+  
+  --primary: #6366f1;      /* Индиго */
+  --primary-hover: #4f46e5;
+  --primary-light: #e0e7ff;
+  
+  --success: #10b981;      /* Зеленый */
+  --success-bg: #d1fae5;
+  --danger: #ef4444;       /* Красный */
+  --warning: #f59e0b;      /* Оранжевый */
+  
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  
+  --border: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  
+  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --scale-factor: 1;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-  font-family:'Press Start 2P','Courier New',monospace;
-  background:#2a1a3a; min-height:100vh; overflow-x:hidden;
-  font-size:calc(0.5rem * var(--font-size-multiplier) * var(--scale-factor));
-  line-height:2; color:var(--text-color); padding:calc(8px * var(--scale-factor));
-  display:flex; flex-direction:column;
-}
-h1,h2,h3,p,span,div,button,a,label,strong,b,input,textarea{
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-}
-h1{font-size:calc(0.9rem * var(--font-size-multiplier) * var(--scale-factor));letter-spacing:calc(2px * var(--scale-factor));line-height:2;}
-.sky{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;background:linear-gradient(180deg,#1a1030 0%,#2a1a3a 50%,#1a1030 100%);}
-.container{
-  width:100%;max-width:1000px;margin:0 auto;position:relative;z-index:20;
-  background:var(--bg-primary);border-radius:calc(20px * var(--scale-factor));
-  border:calc(3px * var(--scale-factor)) solid var(--border-color);
-  box-shadow:0 calc(15px * var(--scale-factor)) calc(30px * var(--scale-factor)) rgba(0,0,0,0.5);
-  padding:calc(20px * var(--scale-factor)) calc(25px * var(--scale-factor));
-  flex:1;display:flex;flex-direction:column;
-}
-.top-bar{
-  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;
-  gap:calc(10px * var(--scale-factor));padding:calc(10px * var(--scale-factor));
-  background:var(--bg-secondary);border-radius:calc(12px * var(--scale-factor));
-  border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  margin-bottom:calc(15px * var(--scale-factor));
-}
-.tabs{
-  display:flex;gap:calc(6px * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor));flex-wrap:wrap;
-}
-.tab-btn{
-  flex:1;background:var(--btn-bg);border:none;font-family:inherit;
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  padding:calc(10px * var(--scale-factor)) calc(8px * var(--scale-factor));
-  color:#fff;cursor:pointer;border-radius:calc(10px * var(--scale-factor));
-  box-shadow:calc(3px * var(--scale-factor)) calc(3px * var(--scale-factor)) 0 var(--btn-shadow);
-  transition:all 0.15s ease;text-transform:uppercase;min-width:calc(100px * var(--scale-factor));
-}
-.tab-btn.active{background:var(--border-color);color:#121624;}
-.tab-btn:hover{transform:scale(1.02);}
-.date-nav{
-  display:flex;justify-content:center;align-items:center;
-  gap:calc(10px * var(--scale-factor));margin-bottom:calc(15px * var(--scale-factor));
-  flex-wrap:wrap;
-}
-.date-btn{
-  background:var(--btn-bg);border:none;font-family:inherit;
-  font-size:calc(0.45rem * var(--font-size-multiplier) * var(--scale-factor));
-  padding:calc(8px * var(--scale-factor)) calc(12px * var(--scale-factor));
-  color:#fff;cursor:pointer;border-radius:calc(8px * var(--scale-factor));
-  box-shadow:calc(2px * var(--scale-factor)) calc(2px * var(--scale-factor)) 0 var(--btn-shadow);
-  transition:all 0.15s ease;
-}
-.date-btn:hover{transform:scale(1.05);}
-.date-display{
-  font-size:calc(0.5rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--border-color);font-weight:bold;min-width:calc(180px * var(--scale-factor));
-  text-align:center;
-}
-.progress-section{
-  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(14px * var(--scale-factor));padding:calc(15px * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor));
-}
-.progress-label{
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  margin-bottom:calc(8px * var(--scale-factor));gap:calc(8px * var(--scale-factor));
-}
-.progress-bar-container{
-  background:#2a2f40;border-radius:calc(15px * var(--scale-factor));
-  height:calc(14px * var(--scale-factor));overflow:hidden;
-}
-.progress-bar{
-  height:100%;background:linear-gradient(90deg,#2a7a3a,#4aff6a);
-  width:0%;border-radius:calc(15px * var(--scale-factor));
-  transition:width 0.4s ease;
-}
-.add-form{
-  display:flex;gap:calc(8px * var(--scale-factor));flex-wrap:wrap;
-  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(14px * var(--scale-factor));padding:calc(12px * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor));
-}
-.add-form.hidden{display:none;}
-.add-input{
-  flex:1;min-width:calc(200px * var(--scale-factor));
-  background:var(--bg-input);border:calc(2px * var(--scale-factor)) solid #e08a4a;
-  border-radius:calc(10px * var(--scale-factor));color:var(--text-color);
-  font-family:'Press Start 2P',monospace;
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  padding:calc(10px * var(--scale-factor));font-weight:bold;
-}
-.add-input:focus{outline:none;border-color:var(--border-color);box-shadow:0 0 calc(15px * var(--scale-factor)) rgba(255,170,102,0.2);}
-.add-input:disabled{opacity:0.5;cursor:not-allowed;}
 
-/* Убираем стрелочки у input type="number" */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  line-height: 1.5;
+  font-size: 15px;
+}
+
+.container {
+  width: 100%;
+  max-width: 700px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 30px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+/* ================= HEADER ================= */
+.top-bar {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+/* ================= TABS ================= */
+.tabs {
+  display: flex;
+  background: var(--bg-body);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  margin-bottom: 25px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 15px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn.active {
+  background: var(--bg-surface);
+  color: var(--primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ================= COMMON UI ================= */
+.btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  color: var(--text-main);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--bg-surface-hover);
+  border-color: #d1d5db;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-green { background: var(--success); color: white; border-color: var(--success); }
+.btn-green:hover:not(:disabled) { background: #059669; border-color: #059669; }
+
+.btn-red { background: var(--danger); color: white; border-color: var(--danger); }
+.btn-red:hover:not(:disabled) { background: #dc2626; border-color: #dc2626; }
+
+.btn-blue { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-blue:hover:not(:disabled) { background: var(--primary-hover); border-color: var(--primary-hover); }
+
+.btn-big {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.add-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.add-form.hidden { display: none; }
+
+.add-input {
+  flex: 1;
+  min-width: 150px;
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 12px 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  background: var(--bg-surface);
+}
+
+/* Скрываем стрелочки у number */
 input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-input[type=number] {
-  -moz-appearance: textfield;
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* ================= TASKS ================= */
+.date-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: var(--bg-body);
+  padding: 10px;
+  border-radius: var(--radius-md);
 }
 
-.btn{
-  background:var(--btn-bg);border:none;font-family:inherit;
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  padding:calc(10px * var(--scale-factor)) calc(14px * var(--scale-factor));
-  color:#fff;cursor:pointer;border-radius:calc(8px * var(--scale-factor));
-  box-shadow:calc(2px * var(--scale-factor)) calc(2px * var(--scale-factor)) 0 var(--btn-shadow);
-  transition:all 0.15s ease;text-transform:uppercase;white-space:nowrap;
+.date-display {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  text-align: center;
 }
-.btn:hover:not(:disabled){transform:scale(1.03);}
-.btn:disabled{opacity:0.4;cursor:not-allowed;}
-.btn-green{background:#2a7a3a;}
-.btn-red{background:#8a2a2a;}
-.btn-blue{background:#2a4a7a;}
-.btn-big{
-  width:100%;padding:calc(16px * var(--scale-factor));
-  font-size:calc(0.6rem * var(--font-size-multiplier) * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor));
-}
-.items-list{display:flex;flex-direction:column;gap:calc(8px * var(--scale-factor));}
-.item{
-  display:flex;align-items:center;gap:calc(10px * var(--scale-factor));
-  background:var(--bg-card);border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(12px * var(--scale-factor));padding:calc(12px * var(--scale-factor));
-  transition:all 0.2s ease;
-}
-.item.done{opacity:0.6;border-color:#4a8a4a;}
-.item.done .item-text{text-decoration:line-through;color:var(--text-secondary);}
-.item-checkbox{
-  width:calc(24px * var(--scale-factor));height:calc(24px * var(--scale-factor));
-  min-width:calc(24px * var(--scale-factor));
-  border:calc(3px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(6px * var(--scale-factor));cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:calc(0.7rem * var(--scale-factor));background:var(--bg-input);
-  transition:all 0.15s ease;
-}
-.item-checkbox:hover{transform:scale(1.1);}
-.item-checkbox.checked{background:#2a7a3a;border-color:#4aff6a;}
-.item-checkbox.checked::after{content:'✓';color:#fff;font-size:calc(0.5rem * var(--scale-factor));}
-.item-text{
-  flex:1;font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  word-break:break-word;line-height:1.6;
-}
-.item-delete{
-  background:transparent;border:none;color:#ff6666;
-  font-size:calc(0.6rem * var(--scale-factor));cursor:pointer;
-  padding:calc(4px * var(--scale-factor));transition:all 0.15s ease;
-  font-family:inherit;
-}
-.item-delete:hover{transform:scale(1.2);color:#ff4444;}
-.empty-state{
-  text-align:center;padding:calc(40px * var(--scale-factor));
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--text-secondary);line-height:2;
-}
-.habits-grid{
-  display:grid;grid-template-columns:repeat(7,1fr);
-  gap:calc(4px * var(--scale-factor));
-  margin-top:calc(10px * var(--scale-factor));
-}
-.habit-day-header{
-  text-align:center;font-size:calc(0.3rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--border-color);font-weight:bold;padding:calc(4px * var(--scale-factor));
-}
-.habit-day{
-  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-  background:var(--bg-input);border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(8px * var(--scale-factor));cursor:pointer;
-  font-size:calc(0.6rem * var(--scale-factor));
-  transition:all 0.15s ease;
-}
-.habit-day:hover{transform:scale(1.08);}
-.habit-day.done{background:#2a7a3a;border-color:#4aff6a;}
-.habit-day.today{border-color:#fff;box-shadow:0 0 calc(10px * var(--scale-factor)) rgba(255,255,255,0.4);}
-.habit-day.future{opacity:0.3;cursor:not-allowed;}
-.habit-card{
-  background:var(--bg-card);border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(14px * var(--scale-factor));padding:calc(15px * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor));
-}
-.habit-header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:calc(10px * var(--scale-factor));flex-wrap:wrap;gap:calc(8px * var(--scale-factor));
-}
-.habit-name{
-  font-size:calc(0.45rem * var(--font-size-multiplier) * var(--scale-factor));
-  font-weight:bold;flex:1;min-width:calc(150px * var(--scale-factor));
-  word-break:break-word;
-}
-.habit-streak{
-  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid #ffaa66;
-  border-radius:calc(20px * var(--scale-factor));
-  padding:calc(4px * var(--scale-factor)) calc(10px * var(--scale-factor));
-  font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:#ffaa66;font-weight:bold;white-space:nowrap;
-}
-.habit-stats{
-  display:flex;gap:calc(10px * var(--scale-factor));flex-wrap:wrap;
-  font-size:calc(0.3rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--text-secondary);margin-top:calc(8px * var(--scale-factor));
-}
-.toast{
-  position:fixed;top:calc(20px * var(--scale-factor));left:50%;transform:translateX(-50%);
-  background:#2a7a3a;color:#fff;
-  padding:calc(10px * var(--scale-factor)) calc(20px * var(--scale-factor));
-  border-radius:calc(10px * var(--scale-factor));
-  border:calc(2px * var(--scale-factor)) solid #4aff6a;z-index:9999;
-  font-family:'Press Start 2P',monospace;
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  animation:toastIn 0.3s ease;max-width:90%;text-align:center;
-}
-.toast.warning{background:#8a3a2a;border-color:#ff6644;}
-@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(calc(-20px * var(--scale-factor)));}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 
-/* ======================= МОДАЛЬНОЕ ПОДТВЕРЖДЕНИЕ ======================= */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:10000;
-  display:flex;align-items:center;justify-content:center;
-  animation:fadeIn 0.2s ease;
+.progress-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
 }
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.modal-box{
-  background:var(--bg-primary);border:calc(3px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(16px * var(--scale-factor));
-  padding:calc(20px * var(--scale-factor));
-  max-width:calc(400px * var(--scale-factor));width:90%;
-  box-shadow:0 calc(10px * var(--scale-factor)) calc(30px * var(--scale-factor)) rgba(0,0,0,0.6);
-  text-align:center;
-}
-.modal-text{
-  font-size:calc(0.45rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--text-color);line-height:2;margin-bottom:calc(20px * var(--scale-factor));
-}
-.modal-actions{
-  display:flex;gap:calc(10px * var(--scale-factor));justify-content:center;flex-wrap:wrap;
-}
-.modal-actions .btn{flex:1;min-width:calc(100px * var(--scale-factor));}
 
-/* ======================= РАСПИСАНИЕ ======================= */
-.week-days{
-  display:flex; gap:calc(4px * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor)); flex-wrap:wrap;
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 10px;
 }
-.week-day-btn{
-  flex:1; background:var(--bg-card); border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  color:#fff; font-family:inherit; font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
-  padding:calc(8px * var(--scale-factor)) calc(4px * var(--scale-factor));
-  cursor:pointer; border-radius:calc(8px * var(--scale-factor)); text-transform:uppercase;
-  transition:all 0.15s ease; min-width:calc(45px * var(--scale-factor));
-}
-.week-day-btn:hover{transform:scale(1.05);}
-.week-day-btn.active{background:var(--border-color); color:#121624; font-weight:bold; border-color:#fff;}
-.week-day-btn.today{border-color:#4aff6a; box-shadow:0 0 calc(10px * var(--scale-factor)) rgba(74,255,106,0.3);}
 
-.copy-menu{
-  display:flex; gap:calc(8px * var(--scale-factor));
-  align-items:center; flex-wrap:wrap; margin-bottom:calc(15px * var(--scale-factor));
-  background:var(--bg-secondary); border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  padding:calc(10px * var(--scale-factor)); border-radius:calc(12px * var(--scale-factor));
+.progress-bar-container {
+  background: var(--bg-body);
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
 }
-.copy-menu span{font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor)); color:var(--text-secondary);}
 
-/* ======================= ТРЕНИРОВКА ======================= */
-.exercise-item{
-  display:flex;align-items:center;gap:calc(10px * var(--scale-factor));
-  background:var(--bg-card);border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(12px * var(--scale-factor));padding:calc(12px * var(--scale-factor));
-  transition:all 0.2s ease;
+.progress-bar {
+  height: 100%;
+  background: var(--success);
+  width: 0%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
 }
-.exercise-item.active{
-  border-color:#4aff6a;
-  box-shadow:0 0 calc(15px * var(--scale-factor)) rgba(74,255,106,0.4);
-}
-.exercise-item.done{opacity:0.5;border-color:#4a8a4a;}
-.exercise-item.done .exercise-name{text-decoration:line-through;color:var(--text-secondary);}
-.exercise-item.dragging{opacity:0.4; border-style:dashed;}
-.exercise-num{
-  min-width:calc(28px * var(--scale-factor));
-  height:calc(28px * var(--scale-factor));
-  display:flex;align-items:center;justify-content:center;
-  background:var(--bg-secondary);
-  border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(8px * var(--scale-factor));
-  font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--border-color);font-weight:bold;
-}
-.exercise-item.done .exercise-num{background:#2a7a3a;border-color:#4aff6a;color:#fff;}
-.exercise-item.active .exercise-num{background:#4aff6a;border-color:#fff;color:#121624;}
 
-.drag-handle{
-  cursor:grab;color:var(--text-secondary);font-size:calc(0.7rem * var(--scale-factor));
-  padding:0 calc(4px * var(--scale-factor));user-select:none;letter-spacing:-2px;
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.drag-handle:active{cursor:grabbing;}
 
-.exercise-name{
-  flex:1;font-size:calc(0.4rem * var(--font-size-multiplier) * var(--scale-factor));
-  word-break:break-word;line-height:1.6;
+.item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  transition: all 0.2s ease;
 }
-.exercise-time{
-  background:var(--bg-secondary);border:calc(2px * var(--scale-factor)) solid #ffaa66;
-  border-radius:calc(20px * var(--scale-factor));
-  padding:calc(4px * var(--scale-factor)) calc(10px * var(--scale-factor));
-  font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:#ffaa66;font-weight:bold;white-space:nowrap;
-}
-.exercise-time.rest{border-color:#4a8a8a;color:#4a8a8a;}
-.item-edit{
-  background:transparent;border:none;color:#ffaa66;
-  font-size:calc(0.6rem * var(--scale-factor));cursor:pointer;
-  padding:calc(4px * var(--scale-factor));transition:all 0.15s ease;
-  font-family:inherit;
-}
-.item-edit:hover{transform:scale(1.2);color:#fff;}
 
-.active-timer{
-  text-align:center;
-  font-size:calc(1.2rem * var(--scale-factor));
-  color:var(--border-color);
-  margin:calc(10px * var(--scale-factor)) 0;
-  letter-spacing:calc(3px * var(--scale-factor));
-  font-weight:bold;
+.item:hover {
+  border-color: #d1d5db;
+  box-shadow: var(--shadow-sm);
 }
-.active-timer.finished{color:#4aff6a;animation:pulse 1s infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-.training-actions{
-  display:flex;gap:calc(8px * var(--scale-factor));
-  margin-top:calc(12px * var(--scale-factor));flex-wrap:wrap;justify-content:center;
+
+.item.done {
+  background: #f8fafc;
+  border-color: var(--border);
+  opacity: 0.7;
 }
-.start-training-box{
-  background:var(--bg-secondary);
-  border:calc(2px * var(--scale-factor)) solid var(--border-color);
-  border-radius:calc(14px * var(--scale-factor));
-  padding:calc(15px * var(--scale-factor));
-  margin-bottom:calc(15px * var(--scale-factor));
-  text-align:center;
+
+.item.done .item-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
 }
-.start-training-hint{
-  font-size:calc(0.35rem * var(--font-size-multiplier) * var(--scale-factor));
-  color:var(--text-secondary);margin-top:calc(10px * var(--scale-factor));line-height:2;
+
+.item-checkbox {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: var(--bg-surface);
 }
-@media(max-width:480px){body{--scale-factor:0.8;}.date-display{min-width:calc(140px * var(--scale-factor));}.tab-btn{min-width:calc(80px * var(--scale-factor));font-size:calc(0.33rem * var(--font-size-multiplier) * var(--scale-factor));}}
+
+.item-checkbox:hover { border-color: var(--success); }
+
+.item-checkbox.checked {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.item-checkbox.checked::after {
+  content: '';
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+}
+
+.item-text {
+  flex: 1;
+  font-size: 15px;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.item-delete, .item-edit {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-delete:hover { color: var(--danger); background: #fee2e2; }
+.item-edit:hover { color: var(--primary); background: var(--primary-light); }
+
+/* ================= HABITS ================= */
+.habit-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+.habit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.habit-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.habit-streak {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.habit-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+.habits-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.habit-day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding-bottom: 5px;
+}
+
+.habit-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-body);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.habit-day:hover { background: #e5e7eb; }
+.habit-day.done { background: var(--success); }
+.habit-day.missed { background: #fee2e2; cursor: not-allowed; }
+.habit-day.today { border-color: var(--primary); }
+.habit-day.future { opacity: 0.4; cursor: not-allowed; }
+
+.fix-btn-wrapper { margin-top: 15px; }
+
+.fix-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.fix-btn:hover { background: var(--primary-light); border-color: var(--primary); }
+
+/* ================= TRAINING ================= */
+.week-days {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.week-day-btn {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 4px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.week-day-btn:hover { background: var(--bg-surface-hover); }
+.week-day-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.week-day-btn.today { border-color: var(--primary); border-width: 2px; }
+
+.copy-menu {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background: var(--bg-body);
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.copy-menu span {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.copy-menu .btn {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  transition: all 0.2s ease;
+}
+
+.exercise-item.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.exercise-item.done { opacity: 0.6; background: #f8fafc; }
+.exercise-item.done .exercise-name { text-decoration: line-through; color: var(--text-muted); }
+.exercise-item.dragging { opacity: 0.4; border-style: dashed; }
+
+.exercise-num {
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-body);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.exercise-item.done .exercise-num { background: var(--success); color: white; }
+.exercise-item.active .exercise-num { background: var(--primary); color: white; }
+
+.drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  font-size: 18px;
+  user-select: none;
+}
+.drag-handle:active { cursor: grabbing; }
+
+.exercise-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.exercise-time {
+  background: var(--bg-body);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.exercise-time.rest { color: var(--warning); background: #fef3c7; }
+
+.start-training-box {
+  background: var(--bg-body);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.start-training-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 10px;
+}
+
+.active-timer {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 15px 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 2px;
+}
+
+.active-timer.finished { color: var(--success); }
+
+.training-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  justify-content: center;
+}
+
+/* ================= MODAL & TOAST ================= */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  font-size: 14px;
+  font-weight: 500;
+  animation: toastIn 0.3s ease;
+}
+.toast.warning { background: var(--danger); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-box {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes modalPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-text {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  body { padding: 10px; }
+  .container { padding: 20px; margin-top: 10px; }
+  .active-timer { font-size: 36px; }
+  .tab-btn { font-size: 13px; padding: 8px; }
+}
 </style>
 </head>
 <body>
-<div class="sky"></div>
 <div class="container">
-  <div class="top-bar"><h1>HABIT TRACKER</h1></div>
+  <div class="top-bar"><h1>Habit Tracker</h1></div>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tabTasks" onclick="switchTab('tasks')">ЗАДАЧИ</button>
-    <button class="tab-btn" id="tabHabits" onclick="switchTab('habits')">ПРИВЫЧКИ</button>
-    <button class="tab-btn" id="tabTraining" onclick="switchTab('training')">ТРЕНИРОВКА</button>
+    <button class="tab-btn active" id="tabTasks" onclick="switchTab('tasks')">Задачи</button>
+    <button class="tab-btn" id="tabHabits" onclick="switchTab('habits')">Привычки</button>
+    <button class="tab-btn" id="tabTraining" onclick="switchTab('training')">Тренировка</button>
   </div>
 
   <!-- ===================== ЗАДАЧИ ===================== -->
   <div id="tasksTab">
     <div class="date-nav">
-      <button class="date-btn" onclick="changeDate(-1)">◀</button>
+      <button class="btn" onclick="changeDate(-1)">◀</button>
       <div class="date-display" id="dateDisplay"></div>
-      <button class="date-btn" onclick="changeDate(1)">▶</button>
-      <button class="date-btn" onclick="goToday()" style="background:#2a7a3a;">СЕГОДНЯ</button>
+      <button class="btn" onclick="changeDate(1)">▶</button>
     </div>
+    <button class="btn btn-green btn-big" onclick="goToday()">Сегодня</button>
+    
     <div class="progress-section">
       <div class="progress-label">
-        <span>ПРОГРЕСС</span>
+        <span>Прогресс</span>
         <span id="progressText">0 / 0</span>
       </div>
       <div class="progress-bar-container"><div class="progress-bar" id="progressBar"></div></div>
     </div>
+
     <div class="add-form">
-      <input type="text" class="add-input" id="taskInput" placeholder="НОВАЯ ЗАДАЧА..." maxlength="100">
-      <button class="btn btn-green" onclick="addTask()">+ ДОБАВИТЬ</button>
+      <input type="text" class="add-input" id="taskInput" placeholder="Новая задача..." maxlength="100">
+      <button class="btn btn-green" onclick="addTask()">Добавить</button>
     </div>
     <div class="items-list" id="tasksList"></div>
   </div>
@@ -401,8 +677,8 @@ input[type=number] {
   <!-- ===================== ПРИВЫЧКИ ===================== -->
   <div id="habitsTab" style="display:none;">
     <div class="add-form">
-      <input type="text" class="add-input" id="habitInput" placeholder="НОВАЯ ПРИВЫЧКА..." maxlength="100">
-      <button class="btn btn-green" onclick="addHabit()">+ ДОБАВИТЬ</button>
+      <input type="text" class="add-input" id="habitInput" placeholder="Новая привычка..." maxlength="100">
+      <button class="btn btn-green" onclick="addHabit()">Добавить</button>
     </div>
     <div id="habitsList"></div>
   </div>
@@ -410,7 +686,6 @@ input[type=number] {
   <!-- ===================== ТРЕНИРОВКА ===================== -->
   <div id="trainingTab" style="display:none;">
     
-    <!-- Расписание -->
     <div class="week-days" id="weekDays">
       <button class="week-day-btn" onclick="selectDay(0)">ПН</button>
       <button class="week-day-btn" onclick="selectDay(1)">ВТ</button>
@@ -421,35 +696,31 @@ input[type=number] {
       <button class="week-day-btn" onclick="selectDay(6)">ВС</button>
     </div>
 
-    <!-- Копирование -->
     <div class="copy-menu" id="copyMenu" style="display:none;">
-      <span>КОПИРОВАТЬ В:</span>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(0)">ПН</button>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(1)">ВТ</button>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(2)">СР</button>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(3)">ЧТ</button>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(4)">ПТ</button>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(5)">СБ</button>
-      <button class="btn btn-blue" style="padding:calc(6px * var(--scale-factor)) calc(10px * var(--scale-factor));" onclick="copyToDay(6)">ВС</button>
+      <span>Копировать в:</span>
+      <button class="btn btn-blue" onclick="copyToDay(0)">ПН</button>
+      <button class="btn btn-blue" onclick="copyToDay(1)">ВТ</button>
+      <button class="btn btn-blue" onclick="copyToDay(2)">СР</button>
+      <button class="btn btn-blue" onclick="copyToDay(3)">ЧТ</button>
+      <button class="btn btn-blue" onclick="copyToDay(4)">ПТ</button>
+      <button class="btn btn-blue" onclick="copyToDay(5)">СБ</button>
+      <button class="btn btn-blue" onclick="copyToDay(6)">ВС</button>
     </div>
 
-    <!-- Форма добавления -->
     <div class="add-form" id="exerciseForm">
-      <input type="text" class="add-input" id="exerciseInput" placeholder="УПРАЖНЕНИЕ..." maxlength="60">
-      <input type="number" class="add-input" id="exerciseTime" placeholder="СЕК" min="5" max="600" value="30" style="max-width:calc(110px * var(--scale-factor));">
-      <button class="btn btn-green" onclick="addExercise()">+ ДОБАВИТЬ</button>
+      <input type="text" class="add-input" id="exerciseInput" placeholder="Упражнение..." maxlength="60">
+      <input type="number" class="add-input" id="exerciseTime" placeholder="Сек" min="5" max="600" value="30" style="max-width:100px;">
+      <button class="btn btn-green" onclick="addExercise()">Добавить</button>
     </div>
 
-    <!-- Кнопка старта -->
     <div class="start-training-box" id="startTrainingBox" style="display:none;">
-      <button class="btn btn-green btn-big" onclick="startTraining()">▶ НАЧАТЬ ТРЕНИРОВКУ</button>
+      <button class="btn btn-green btn-big" onclick="startTraining()">Начать тренировку</button>
       <div class="start-training-hint" id="startTrainingHint"></div>
     </div>
 
-    <!-- Активное упражнение -->
     <div class="progress-section" id="trainingActive" style="display:none;">
       <div class="progress-label">
-        <span>СЕЙЧАС: <strong id="activeExerciseName">—</strong></span>
+        <span>Сейчас: <strong id="activeExerciseName">—</strong></span>
         <span id="activeExerciseStep">1 / 1</span>
       </div>
       <div class="active-timer" id="activeExerciseTimer" aria-live="polite" role="timer">00:00</div>
@@ -457,15 +728,14 @@ input[type=number] {
         <div class="progress-bar" id="activeExerciseProgress" style="width:0%;"></div>
       </div>
       <div class="training-actions">
-        <button class="btn btn-green" id="btnNextExercise" disabled onclick="nextExercise()">СЛЕДУЮЩЕЕ</button>
-        <button class="btn btn-red" onclick="resetTraining()">СБРОС</button>
+        <button class="btn btn-green" id="btnNextExercise" disabled onclick="nextExercise()">Следующее</button>
+        <button class="btn btn-red" onclick="resetTraining()">Сброс</button>
       </div>
-      <div class="habit-stats" style="margin-top:calc(8px * var(--scale-factor));justify-content:center;">
+      <div class="habit-stats" style="margin-top:10px;justify-content:center;">
         <span id="trainingHint">Дождитесь окончания таймера</span>
       </div>
     </div>
 
-    <!-- Список -->
     <div class="items-list" id="exercisesList"></div>
   </div>
 </div>
@@ -480,9 +750,8 @@ currentDate.setHours(0,0,0,0);
 var tasks = loadTasks();
 var habits = loadHabits();
 
-// Структура: { "0": [{name, seconds, id}], "1": [...], ... }
 var exercisesData = loadExercises(); 
-var currentDayIndex = (new Date().getDay() + 6) % 7; // 0 = ПН, 6 = ВС
+var currentDayIndex = (new Date().getDay() + 6) % 7; 
 var training = {
   activeIndex: -1,   
   endTime: 0,        
@@ -492,7 +761,7 @@ var training = {
   started: false     
 };
 
-var MONTHS = ['ЯНВАРЯ','ФЕВРАЛЯ','МАРТА','АПРЕЛЯ','МАЯ','ИЮНЯ','ИЮЛЯ','АВГУСТА','СЕНТЯБРЯ','ОКТЯБРЯ','НОЯБРЯ','ДЕКАБРЯ'];
+var MONTHS = ['Января','Февраля','Марта','Апреля','Мая','Июня','Июля','Августа','Сентября','Октября','Ноября','Декабря'];
 var DAYS_SHORT = ['ПН','ВТ','СР','ЧТ','ПТ','СБ','ВС'];
 
 /* ============================================================
@@ -532,8 +801,8 @@ function showConfirm(message, onYes, onNo){
   box.className = 'modal-box';
   box.innerHTML = '<div class="modal-text">' + escapeHtml(message) + '</div>' +
     '<div class="modal-actions">' +
-      '<button class="btn btn-red" id="modalNo">ОТМЕНА</button>' +
-      '<button class="btn btn-green" id="modalYes">ДА</button>' +
+      '<button class="btn" id="modalNo">Отмена</button>' +
+      '<button class="btn btn-green" id="modalYes">Да</button>' +
     '</div>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
@@ -569,14 +838,14 @@ function renderTasks(){
   var today = new Date(); today.setHours(0,0,0,0);
   var isToday = currentDate.getTime() === today.getTime();
   var display = currentDate.getDate() + ' ' + MONTHS[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-  if(isToday) display = 'СЕГОДНЯ, ' + display;
+  if(isToday) display = 'Сегодня, ' + display;
   document.getElementById('dateDisplay').textContent = display;
 
   var dayTasks = tasks[dk] || [];
   var list = document.getElementById('tasksList');
   list.innerHTML = '';
   if(dayTasks.length === 0){
-    list.innerHTML = '<div class="empty-state">НЕТ ЗАДАЧ НА ЭТОТ ДЕНЬ<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВУЮ ЗАДАЧУ ВЫШЕ</span></div>';
+    list.innerHTML = '<div class="empty-state">Нет задач на этот день<br><span style="font-size:13px;">Добавьте первую задачу выше</span></div>';
   } else {
     dayTasks.forEach(function(t, idx){
       var item = document.createElement('div');
@@ -584,7 +853,7 @@ function renderTasks(){
       item.innerHTML =
         '<div class="item-checkbox' + (t.done ? ' checked' : '') + '" role="checkbox" tabindex="0" onclick="toggleTask(' + idx + ')" onkeypress="if(event.key===\'Enter\'||event.key===\' \')toggleTask(' + idx + ')"></div>' +
         '<div class="item-text">' + escapeHtml(t.text) + '</div>' +
-        '<button class="item-delete" onclick="deleteTask(' + idx + ')">X</button>';
+        '<button class="item-delete" onclick="deleteTask(' + idx + ')">✕</button>';
       list.appendChild(item);
     });
   }
@@ -596,11 +865,11 @@ function renderTasks(){
 function addTask(){
   var inp = document.getElementById('taskInput');
   var text = inp.value.trim();
-  if(!text){ showToast('ВВЕДИТЕ ЗАДАЧУ', true); return; }
+  if(!text){ showToast('Введите задачу', true); return; }
   var dk = dateKey(currentDate);
   if(!tasks[dk]) tasks[dk] = [];
   tasks[dk].push({ text: text, done: false, time: Date.now() });
-  saveTasks(); inp.value = ''; renderTasks(); showToast('ЗАДАЧА ДОБАВЛЕНА');
+  saveTasks(); inp.value = ''; renderTasks(); showToast('Задача добавлена');
 }
 function toggleTask(idx){
   var dk = dateKey(currentDate);
@@ -611,8 +880,8 @@ function toggleTask(idx){
 function deleteTask(idx){
   var dk = dateKey(currentDate);
   if(!tasks[dk]) return;
-  showConfirm('УДАЛИТЬ ЗАДАЧУ?', function(){
-    tasks[dk].splice(idx, 1); saveTasks(); renderTasks(); showToast('ЗАДАЧА УДАЛЕНА');
+  showConfirm('Удалить задачу?', function(){
+    tasks[dk].splice(idx, 1); saveTasks(); renderTasks(); showToast('Задача удалена');
   });
 }
 
@@ -623,42 +892,108 @@ function getWeekStart(d){
   var day = d.getDay(); var diff = (day === 0 ? -6 : 1 - day);
   var start = new Date(d); start.setDate(start.getDate() + diff); start.setHours(0,0,0,0); return start;
 }
+
 function renderHabits(){
   var list = document.getElementById('habitsList'); list.innerHTML = '';
   if(habits.length === 0){
-    list.innerHTML = '<div class="empty-state">НЕТ ПРИВЫЧЕК<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВУЮ ПРИВЫЧКУ ВЫШЕ</span></div>'; return;
+    list.innerHTML = '<div class="empty-state">Нет привычек<br><span style="font-size:13px;">Добавьте первую привычку выше</span></div>'; return;
   }
   var today = new Date(); today.setHours(0,0,0,0);
   var weekStart = getWeekStart(today);
+
   habits.forEach(function(h, hIdx){
     var card = document.createElement('div'); card.className = 'habit-card';
     var streak = calcStreak(h);
     var totalDone = Object.keys(h.days || {}).filter(function(k){ return h.days[k]; }).length;
     var weekDone = 0;
+    
     for(var i=0;i<7;i++){
       var d = new Date(weekStart); d.setDate(d.getDate() + i);
       if(h.days && h.days[dateKey(d)]) weekDone++;
     }
+
     var html = '<div class="habit-header"><div class="habit-name">' + escapeHtml(h.name) + '</div>' +
-      '<div class="habit-streak">СЕРИЯ ' + streak + '</div>' +
-      '<button class="item-delete" onclick="deleteHabit(' + hIdx + ')">X</button></div>';
-    html += '<div class="habit-stats"><span>ВСЕГО: ' + totalDone + '</span><span>НЕДЕЛЯ: ' + weekDone + '/7</span></div><div class="habits-grid">';
+      '<div class="habit-streak">Серия: ' + streak + '</div>' +
+      '<button class="item-delete" onclick="deleteHabit(' + hIdx + ')">✕</button></div>';
+    
+    html += '<div class="habit-stats"><span>Всего: ' + totalDone + '</span><span>Неделя: ' + weekDone + '/7</span></div><div class="habits-grid">';
+    
     for(var i=0;i<7;i++) html += '<div class="habit-day-header">' + DAYS_SHORT[i] + '</div>';
+    
+    var missedDayName = null;
+
     for(var i=0;i<7;i++){
       var d = new Date(weekStart); d.setDate(d.getDate() + i); var dk = dateKey(d);
-      var isDone = h.days && h.days[dk]; var isToday = d.getTime() === today.getTime(); var isFuture = d.getTime() > today.getTime();
-      var cls = 'habit-day' + (isDone ? ' done' : '') + (isToday ? ' today' : '') + (isFuture ? ' future' : '');
-      var onclick = isFuture ? '' : ' onclick="toggleHabit(' + hIdx + ',\'' + dk + '\')"';
+      var isDone = h.days && h.days[dk]; 
+      var isToday = d.getTime() === today.getTime(); 
+      var isFuture = d.getTime() > today.getTime();
+      var isPast = d.getTime() < today.getTime();
+
+      var cls = 'habit-day';
+      var onclick = '';
+
+      if (isDone) {
+        cls += ' done';
+        if (isToday) onclick = ' onclick="toggleHabit(' + hIdx + ',\'' + dk + '\')"';
+      } else if (isToday) {
+        cls += ' today';
+        onclick = ' onclick="toggleHabit(' + hIdx + ',\'' + dk + '\')"';
+      } else if (isFuture) {
+        cls += ' future';
+      } else if (isPast) {
+        cls += ' missed';
+        var dayTasks = tasks[dk] || [];
+        if (dayTasks.length === 0 && !missedDayName) {
+            missedDayName = DAYS_SHORT[i];
+        }
+      }
+
       html += '<div class="' + cls + '"' + onclick + '></div>';
     }
-    card.innerHTML = html + '</div>'; list.appendChild(card);
+    html += '</div>';
+
+    if (missedDayName) {
+      html += '<div class="fix-btn-wrapper">' +
+              '<button class="fix-btn" onclick="fixMissedHabit(' + hIdx + ')">Исправить ' + missedDayName + '</button>' +
+              '</div>';
+    }
+
+    card.innerHTML = html; 
+    list.appendChild(card);
   });
 }
+
+function fixMissedHabit(hIdx) {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var weekStart = getWeekStart(today);
+  var h = habits[hIdx];
+  if(!h) return;
+
+  for(var i=0;i<7;i++){
+    var d = new Date(weekStart); d.setDate(d.getDate() + i); 
+    var dk = dateKey(d);
+    var isPast = d.getTime() < today.getTime();
+    var isDone = h.days && h.days[dk];
+    var dayTasks = tasks[dk] || [];
+
+    if (isPast && !isDone && dayTasks.length === 0) {
+      showConfirm('Отметить привычку на ' + DAYS_SHORT[i] + '?', function(){
+        if(!h.days) h.days = {};
+        h.days[dk] = true;
+        saveHabits();
+        renderHabits();
+        showToast('Исправлено за ' + DAYS_SHORT[i]);
+      });
+      return;
+    }
+  }
+}
+
 function addHabit(){
   var inp = document.getElementById('habitInput'); var text = inp.value.trim();
-  if(!text){ showToast('ВВЕДИТЕ ПРИВЫЧКУ', true); return; }
+  if(!text){ showToast('Введите привычку', true); return; }
   habits.push({ name: text, days: {}, created: Date.now() });
-  saveHabits(); inp.value = ''; renderHabits(); showToast('ПРИВЫЧКА ДОБАВЛЕНА');
+  saveHabits(); inp.value = ''; renderHabits(); showToast('Привычка добавлена');
 }
 function toggleHabit(hIdx, dk){
   if(!habits[hIdx]) return;
@@ -667,8 +1002,8 @@ function toggleHabit(hIdx, dk){
   saveHabits(); renderHabits();
 }
 function deleteHabit(hIdx){
-  showConfirm('УДАЛИТЬ ПРИВЫЧКУ?', function(){
-    habits.splice(hIdx, 1); saveHabits(); renderHabits(); showToast('ПРИВЫЧКА УДАЛЕНА');
+  showConfirm('Удалить привычку?', function(){
+    habits.splice(hIdx, 1); saveHabits(); renderHabits(); showToast('Привычка удалена');
   });
 }
 function calcStreak(h){
@@ -688,7 +1023,7 @@ function calcStreak(h){
    ТРЕНИРОВКА (РАСПИСАНИЕ И ЛОГИКА)
    ============================================================ */
 function selectDay(idx){
-  if(training.started){ showToast('СНАЧАЛА ЗАВЕРШИТЕ ТРЕНИРОВКУ', true); return; }
+  if(training.started){ showToast('Сначала завершите тренировку', true); return; }
   currentDayIndex = idx;
   renderTraining();
 }
@@ -697,22 +1032,21 @@ function copyToDay(targetIdx){
   if(currentDayIndex === targetIdx) return;
   var srcList = exercisesData[currentDayIndex] || [];
   if(srcList.length === 0){
-    showToast('НЕЧЕГО КОПИРОВАТЬ', true); return;
+    showToast('Нечего копировать', true); return;
   }
-  showConfirm('СКОПИРОВАТЬ ТРЕНИРОВКУ В ' + DAYS_SHORT[targetIdx] + '? ТЕКУЩИЙ СПИСОК БУДЕТ ЗАМЕНЕН.', function(){
-    // Глубокое клонирование с новыми ID
+  showConfirm('Скопировать тренировку в ' + DAYS_SHORT[targetIdx] + '? Текущий список будет заменен.', function(){
     exercisesData[targetIdx] = srcList.map(function(ex){
       return { name: ex.name, seconds: ex.seconds, id: Date.now() + Math.random() };
     });
     saveExercises();
-    showToast('СКОПИРОВАНО В ' + DAYS_SHORT[targetIdx]);
+    showToast('Скопировано в ' + DAYS_SHORT[targetIdx]);
     currentDayIndex = targetIdx;
     renderTraining();
   });
 }
 
 function addExercise(){
-  if(training.started){ showToast('ТРЕНИРОВКА ИДЁТ', true); return; }
+  if(training.started){ showToast('Тренировка идёт', true); return; }
   var nameInp = document.getElementById('exerciseInput');
   var timeInp = document.getElementById('exerciseTime');
   var name = nameInp.value.trim(); 
@@ -720,22 +1054,19 @@ function addExercise(){
   var rawSec = timeInp.value.replace(/\D/g, ''); 
   var sec = parseInt(rawSec, 10);
   
-  if(!name){ showToast('ВВЕДИТЕ НАЗВАНИЕ', true); return; }
-  if(isNaN(sec) || sec < 5 || sec > 600){ showToast('ВРЕМЯ 5-600 СЕК', true); return; }
+  if(!name){ showToast('Введите название', true); return; }
+  if(isNaN(sec) || sec < 5 || sec > 600){ showToast('Время 5-600 сек', true); return; }
   
   if(!exercisesData[currentDayIndex]) exercisesData[currentDayIndex] = [];
   
-  // Добавляем упражнение
   exercisesData[currentDayIndex].push({ name: name, seconds: sec, id: Date.now() });
-  
-  // Автоматически добавляем отдых 15 сек
   exercisesData[currentDayIndex].push({ name: 'отдых', seconds: 15, id: Date.now() + 1 });
   
   saveExercises(); 
   nameInp.value = ''; 
   timeInp.value = '30';
   renderTraining(); 
-  showToast('УПРАЖНЕНИЕ ДОБАВЛЕНО (+15с ОТДЫХ)');
+  showToast('Упражнение добавлено (+15с отдых)');
 }
 
 function editExercise(idx){
@@ -743,18 +1074,17 @@ function editExercise(idx){
   var ex = exercisesData[currentDayIndex][idx];
   if(!ex) return;
 
-  // Создаём модалку для редактирования
   var overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   var box = document.createElement('div');
   box.className = 'modal-box';
   box.innerHTML = 
-    '<div class="modal-text" style="margin-bottom:15px;">РЕДАКТИРОВАТЬ</div>' +
+    '<div class="modal-text" style="margin-bottom:15px;">Редактировать</div>' +
     '<input type="text" id="editName" class="add-input" value="' + escapeHtml(ex.name) + '" style="width:100%;margin-bottom:10px;">' +
-    '<input type="number" id="editTime" class="add-input" value="' + ex.seconds + '" style="width:100%;margin-bottom:15px;">' +
+    '<input type="number" id="editTime" class="add-input" value="' + ex.seconds + '" style="width:100%;margin-bottom:20px;">' +
     '<div class="modal-actions">' +
-      '<button class="btn btn-red" id="editCancel">ОТМЕНА</button>' +
-      '<button class="btn btn-green" id="editSave">СОХРАНИТЬ</button>' +
+      '<button class="btn" id="editCancel">Отмена</button>' +
+      '<button class="btn btn-green" id="editSave">Сохранить</button>' +
     '</div>';
   overlay.appendChild(box);
   document.body.appendChild(overlay);
@@ -763,29 +1093,28 @@ function editExercise(idx){
   box.querySelector('#editSave').onclick = function(){
     var newName = box.querySelector('#editName').value.trim();
     var newSec = parseInt(box.querySelector('#editTime').value.replace(/\D/g, ''), 10);
-    if(!newName){ showToast('ВВЕДИТЕ НАЗВАНИЕ', true); return; }
-    if(isNaN(newSec) || newSec < 5 || newSec > 600){ showToast('ВРЕМЯ 5-600 СЕК', true); return; }
+    if(!newName){ showToast('Введите название', true); return; }
+    if(isNaN(newSec) || newSec < 5 || newSec > 600){ showToast('Время 5-600 сек', true); return; }
     
     exercisesData[currentDayIndex][idx].name = newName;
     exercisesData[currentDayIndex][idx].seconds = newSec;
     saveExercises();
     overlay.remove();
     renderTraining();
-    showToast('СОХРАНЕНО');
+    showToast('Сохранено');
   };
 }
 
 function deleteExercise(idx){
-  if(training.started){ showToast('ТРЕНИРОВКА ИДЁТ', true); return; }
-  showConfirm('УДАЛИТЬ УПРАЖНЕНИЕ?', function(){
+  if(training.started){ showToast('Тренировка идёт', true); return; }
+  showConfirm('Удалить упражнение?', function(){
     exercisesData[currentDayIndex].splice(idx, 1); 
     saveExercises(); 
     renderTraining(); 
-    showToast('УПРАЖНЕНИЕ УДАЛЕНО');
+    showToast('Упражнение удалено');
   });
 }
 
-// ЛОГИКА DRAG & DROP
 var dragSrcIdx = null;
 function handleDragStart(e, idx) {
   if(training.started) return;
@@ -811,12 +1140,12 @@ function handleDragEnd(e) {
 
 function startTraining(){
   var list = exercisesData[currentDayIndex] || [];
-  if(list.length === 0){ showToast('СНАЧАЛА ДОБАВЬТЕ УПРАЖНЕНИЯ', true); return; }
+  if(list.length === 0){ showToast('Сначала добавьте упражнения', true); return; }
   training.started = true;
   training.doneSet = {};
   training.activeIndex = -1;
   startExercise(0);
-  showToast('ТРЕНИРОВКА НАЧАТА');
+  showToast('Тренировка начата');
 }
 
 function startExercise(idx){
@@ -844,18 +1173,16 @@ function startTimer(){
       updateTimerUI();
       renderTraining();
       
-      // АВТО-ПЕРЕХОД НА ОТДЫХ
       var list = exercisesData[currentDayIndex] || [];
       var nextEx = list[training.activeIndex + 1];
       var isCurrentRest = list[training.activeIndex].name.toLowerCase() === 'отдых';
       
       if(nextEx && nextEx.name.toLowerCase() === 'отдых' && !isCurrentRest) {
-         // Автоматически запускаем отдых
          startExercise(training.activeIndex + 1);
-         showToast('УПРАЖНЕНИЕ ВЫПОЛНЕНО! ПЕРЕХОД НА ОТДЫХ...');
+         showToast('Упражнение выполнено! Переход на отдых...');
       } else {
-         if(isCurrentRest) showToast('ОТДЫХ ОКОНЧЕН!');
-         else showToast('УПРАЖНЕНИЕ ВЫПОЛНЕНО!');
+         if(isCurrentRest) showToast('Отдых окончен!');
+         else showToast('Упражнение выполнено!');
       }
       return;
     }
@@ -898,13 +1225,13 @@ function updateTimerUI(){
 
 function nextExercise(){
   if(!training.doneSet[training.activeIndex]){
-    showToast('СНАЧАЛА ЗАВЕРШИТЕ ТЕКУЩЕЕ', true); return;
+    showToast('Сначала завершите текущее', true); return;
   }
   var list = exercisesData[currentDayIndex] || [];
   var next = training.activeIndex + 1;
   
   if(next >= list.length){
-    showToast('ВСЕ УПРАЖНЕНИЯ ВЫПОЛНЕНЫ');
+    showToast('Все упражнения выполнены');
     training.activeIndex = -1; training.started = false;
     renderTraining(); return;
   }
@@ -912,11 +1239,11 @@ function nextExercise(){
 }
 
 function resetTraining(){
-  showConfirm('СБРОСИТЬ ТРЕНИРОВКУ?', function(){
+  showConfirm('Сбросить тренировку?', function(){
     stopTimer();
     training.activeIndex = -1; training.endTime = 0; training.total = 0;
     training.doneSet = {}; training.started = false;
-    renderTraining(); showToast('ТРЕНИРОВКА СБРОШЕНА');
+    renderTraining(); showToast('Тренировка сброшена');
   });
 }
 
@@ -929,7 +1256,6 @@ function renderTraining(){
   
   list.innerHTML = '';
 
-  // Отрисовка дней недели
   var dayBtns = document.querySelectorAll('.week-day-btn');
   var todayIdx = (new Date().getDay() + 6) % 7;
   dayBtns.forEach(function(btn, i) {
@@ -949,7 +1275,7 @@ function renderTraining(){
 
   if(currentList.length === 0){
     activeBox.style.display = 'none'; startBox.style.display = 'none';
-    list.innerHTML = '<div class="empty-state">НЕТ УПРАЖНЕНИЙ НА ' + DAYS_SHORT[currentDayIndex] + '<br><span style="font-size:0.35rem;">ДОБАВЬТЕ ПЕРВОЕ УПРАЖНЕНИЕ ВЫШЕ</span></div>';
+    list.innerHTML = '<div class="empty-state">Нет упражнений на ' + DAYS_SHORT[currentDayIndex] + '<br><span style="font-size:13px;">Добавьте первое упражнение выше</span></div>';
     return;
   }
 
@@ -957,7 +1283,7 @@ function renderTraining(){
     startBox.style.display = 'block';
     var total = currentList.reduce(function(s, e){ return s + e.seconds; }, 0);
     document.getElementById('startTrainingHint').textContent =
-      'УПРАЖНЕНИЙ: ' + currentList.length + ' • ОБЩЕЕ ВРЕМЯ: ' + formatTime(total);
+      'Упражнений: ' + currentList.length + ' • Общее время: ' + formatTime(total);
   } else {
     startBox.style.display = 'none';
   }
@@ -991,20 +1317,20 @@ function renderTraining(){
 
     var actionHtml = '';
     if(done){
-      actionHtml = '<span class="exercise-time" style="border-color:#4aff6a;color:#4aff6a;">ГОТОВО</span>';
+      actionHtml = '<span class="exercise-time" style="background:var(--success-bg);color:var(--success);">Готово</span>';
     } else if(isActive){
-      actionHtml = '<span class="exercise-time">ИДЁТ</span>';
+      actionHtml = '<span class="exercise-time" style="background:var(--primary-light);color:var(--primary);">Идёт</span>';
     }
 
     var handleHtml = training.started ? '' : '<div class="drag-handle">⋮⋮</div>';
     var editBtn = training.started ? '' : '<button class="item-edit" onclick="editExercise(' + idx + ')">✎</button>';
-    var deleteBtn = training.started ? '' : '<button class="item-delete" onclick="deleteExercise(' + idx + ')">X</button>';
+    var deleteBtn = training.started ? '' : '<button class="item-delete" onclick="deleteExercise(' + idx + ')">✕</button>';
     var timeCls = isRest ? 'exercise-time rest' : 'exercise-time';
 
     item.innerHTML =
       handleHtml +
-      '<div class="exercise-num" style="' + (isRest ? 'border-color:#4a8a8a;color:#4a8a8a;' : '') + '">' + (idx + 1) + '</div>' +
-      '<div class="exercise-name" style="' + (isRest ? 'color:#4a8a8a;font-style:italic;' : '') + '">' + escapeHtml(ex.name) + '</div>' +
+      '<div class="exercise-num">' + (idx + 1) + '</div>' +
+      '<div class="exercise-name">' + escapeHtml(ex.name) + '</div>' +
       '<span class="' + timeCls + '">' + formatTime(ex.seconds) + '</span>' +
       actionHtml +
       editBtn +
